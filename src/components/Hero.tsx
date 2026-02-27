@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { ArrowRight, Download, Cpu, Wifi } from "lucide-react";
+import { ArrowRight, Cpu, Wifi } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
 import { useLanguage } from "./LanguageProvider";
@@ -162,12 +162,6 @@ export default function Hero() {
                 {t("buttons.exploreSystem")}{" "}
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </span>
-            </a>
-            <a
-              href="/resume.pdf"
-              className="flex items-center gap-2 bg-white/5 hover:bg-white/10 text-white border border-white/10 px-8 py-4 rounded-full font-bold transition-all hover:scale-105"
-            >
-              {t("buttons.downloadCV")} <Download className="w-5 h-5" />
             </a>
           </motion.div>
         </div>
