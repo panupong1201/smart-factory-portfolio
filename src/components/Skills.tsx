@@ -14,6 +14,7 @@ import {
   MonitorPlay 
 } from "lucide-react";
 import { useLanguage } from "./LanguageProvider";
+import GlowHeading from "@/components/ui/GlowHeading";
 
 export default function Skills() {
   const { t } = useLanguage();
@@ -49,7 +50,7 @@ export default function Skills() {
             viewport={{ once: true }}
             className="text-4xl md:text-5xl font-bold text-white mb-4"
           >
-            {t("skills.professionalSkillSet")}
+            <GlowHeading tone="blue">{t("skills.professionalSkillSet")}</GlowHeading>
           </motion.h2>
         </div>
 
@@ -68,7 +69,7 @@ export default function Skills() {
             </div>
             
             <h3 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
-               <span className="w-2 h-8 bg-yellow-500 rounded-full"/> {t("skills.automation")}
+              <span className="w-2 h-8 bg-yellow-500 rounded-full"/> <GlowHeading tone="green">{t("skills.automation")}</GlowHeading>
             </h3>
             <p className="text-yellow-500/80 text-sm font-mono mb-8">{t("skills.industrialControl")}</p>
 
@@ -90,7 +91,7 @@ export default function Skills() {
                         initial={{ width: 0 }}
                         whileInView={{ width: `${skill.val}%` }}
                         transition={{ duration: 1, delay: i * 0.1 }}
-                        className="h-full bg-gradient-to-r from-yellow-600 to-yellow-400 shadow-[0_0_10px_rgba(234,179,8,0.5)]"
+                        className="h-full bg-linear-to-r from-yellow-600 to-yellow-400 shadow-[0_0_10px_rgba(234,179,8,0.5)]"
                       />
                     </div>
                  </div>
@@ -112,7 +113,7 @@ export default function Skills() {
             </div>
 
             <h3 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
-               <span className="w-2 h-8 bg-cyan-500 rounded-full"/> {t("skills.aiSoftware")}
+              <span className="w-2 h-8 bg-cyan-500 rounded-full"/> <GlowHeading tone="cyan">{t("skills.aiSoftware")}</GlowHeading>
             </h3>
             <p className="text-cyan-500/80 text-sm font-mono mb-8">{t("skills.digitalTwin")}</p>
 
@@ -159,7 +160,7 @@ export default function Skills() {
             </div>
 
             <h3 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
-               <span className="w-2 h-8 bg-purple-500 rounded-full"/> {t("skills.management")}
+              <span className="w-2 h-8 bg-purple-500 rounded-full"/> <GlowHeading tone="purple">{t("skills.management")}</GlowHeading>
             </h3>
             <p className="text-purple-500/80 text-sm font-mono mb-8">{t("skills.leadershipDesc")}</p>
 

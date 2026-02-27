@@ -9,12 +9,12 @@ import { motion } from "framer-motion";
 import { useLanguage } from "@/components/LanguageProvider";
 
 // Map Icons
-const iconMap: any = {
+const iconMap: Record<string, React.ElementType> = {
   Cpu, Wifi, Database, Monitor, Code, Camera, Settings, Cloud, 
   Smartphone, PenTool, Box, Play, Hammer, FileText
 };
 
-export default function SystemArchitecture({ data }: { data: any[] }) {
+export default function SystemArchitecture({ data }: { data: { icon: string; name: string; detail: string }[] }) {
     const { t } = useLanguage();
   if (!data) return null;
 
@@ -25,7 +25,7 @@ export default function SystemArchitecture({ data }: { data: any[] }) {
         <div className="flex items-center gap-2 mb-6 font-mono text-xs text-blue-400 opacity-70">
             <Activity className="w-4 h-4 animate-pulse" />
             <span>{t("projects.systemArchitectureLive")}</span>
-            <div className="h-px flex-1 bg-gradient-to-r from-blue-500/50 to-transparent" />
+            <div className="h-px flex-1 bg-linear-to-r from-blue-500/50 to-transparent" />
         </div>
 
         {/* Main Container */}
@@ -109,7 +109,7 @@ export default function SystemArchitecture({ data }: { data: any[] }) {
                                                 ease: "linear",
                                                 delay: index * 0.2 
                                             }}
-                                            className="absolute inset-0 w-1/2 bg-gradient-to-r from-transparent via-blue-500 to-transparent blur-[2px]"
+                                            className="absolute inset-0 w-1/2 bg-linear-to-r from-transparent via-blue-500 to-transparent blur-[2px]"
                                         />
                                     </div>
 
@@ -138,7 +138,7 @@ export default function SystemArchitecture({ data }: { data: any[] }) {
                                         initial={{ y: "-100%" }}
                                         animate={{ y: "100%" }}
                                         transition={{ duration: 1.5, repeat: Infinity, ease: "linear", delay: index * 0.2 }}
-                                        className="absolute w-full h-1/2 bg-gradient-to-b from-transparent via-blue-500 to-transparent"
+                                        className="absolute w-full h-1/2 bg-linear-to-b from-transparent via-blue-500 to-transparent"
                                     />
                                     {/* Mobile Data Packet */}
                                     <motion.div

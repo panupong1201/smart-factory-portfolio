@@ -5,32 +5,54 @@ import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
 import { X, Award, FileText } from "lucide-react";
 import Image from "next/image";
+import { useLanguage } from "@/components/LanguageProvider";
+import { certificatesData } from "@/data/certificatesData";
 
 type Props = {
-  data: any;
+  data: typeof certificatesData[0];
   onClose: () => void;
 };
 
 export default function CertificateModal({ data, onClose }: Props) {
+  const { t } = useLanguage();
+  const localize = (key: string, fallback: string) => {
+    const translated = t(key);
+    return translated === key ? fallback : translated;
+  };
+
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    const timer = setTimeout(() => setMounted(true), 0);
     // ป้องกันการ Scroll ที่ Body ขณะเปิด Modal
     document.body.style.overflow = "hidden";
     return () => {
+      clearTimeout(timer);
       document.body.style.overflow = "unset";
     };
   }, []);
 
   const Icon = data.icon;
+  const localizedTitle = localize(`certificatesData.${data.id}.title`, data.title);
+  const localizedCategory = localize(
+    `certificates.categories.${String(data.category).toLowerCase()}`,
+    data.category
+  );
+  const localizedIssuer = localize(`certificatesData.${data.id}.issuer`, data.issuer);
+  const localizedDescription = localize(
+    `certificatesData.${data.id}.description`,
+    data.description
+  );
+  const localizedDetails = data.details.map((detail: string, index: number) =>
+    localize(`certificatesData.${data.id}.details.${index}`, detail)
+  );
 
   // ถ้ายังไม่ Mount (Server-side) ให้ return null ไปก่อน
   if (!mounted) return null;
 
   // ใช้ createPortal เพื่อยิง Modal ไปที่ document.body โดยตรง (ทะลุทุก Layer)
   return createPortal(
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center px-4 py-6">
+    <div className="fixed inset-0 z-9999 flex items-center justify-center px-4 py-6">
       
       {/* พื้นหลังดำจางๆ */}
       <motion.div 
@@ -59,7 +81,7 @@ export default function CertificateModal({ data, onClose }: Props) {
         <div className="w-full md:w-1/2 h-1/2 md:h-full bg-black relative flex items-center justify-center border-b md:border-b-0 md:border-r border-gray-800">
            <Image 
               src={data.image} 
-              alt={data.title}
+              alt={localizedTitle}
               fill
               className="object-contain p-4"
               onError={(e) => { e.currentTarget.style.display = 'none'; }} 
@@ -74,42 +96,42 @@ export default function CertificateModal({ data, onClose }: Props) {
         <div className="w-full md:w-1/2 h-1/2 md:h-full p-8 flex flex-col overflow-y-auto custom-scrollbar">
             
             <div className="flex items-center gap-4 mb-6">
-               <div className={`p-3 rounded-xl bg-white/5 border border-white/10 ${data.glow} flex-shrink-0`}>
+               <div className={`p-3 rounded-xl bg-white/5 border border-white/10 ${data.glow} shrink-0`}>
                   <Icon className="w-8 h-8 text-white" />
                </div>
                <div>
-                  <p className="text-sm text-blue-400 font-mono uppercase tracking-widest mb-1">{data.category}</p>
-                  <h3 className="text-2xl md:text-3xl font-bold text-white leading-tight">{data.title}</h3>
+                <p className="text-sm text-blue-400 font-mono uppercase tracking-widest mb-1">{localizedCategory}</p>
+                <h3 className="text-2xl md:text-3xl font-bold text-white leading-tight">{localizedTitle}</h3>
                </div>
             </div>
 
             <div className="space-y-6">
                 {/* Issuer Info */}
                 <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-800">
-                    <p className="text-xs text-gray-500 uppercase font-mono mb-1">Issued By</p>
-                    <p className="text-lg text-white font-medium">{data.issuer}</p>
+                  <p className="text-xs text-gray-500 uppercase font-mono mb-1">{localize("ui.issuedBy", "Issued By")}</p>
+                  <p className="text-lg text-white font-medium">{localizedIssuer}</p>
                     <p className="text-sm text-gray-400">{data.year}</p>
                 </div>
 
                 {/* Description */}
                 <div>
                     <h4 className="text-base font-bold text-white mb-2 flex items-center gap-2">
-                        <FileText className="w-5 h-5 text-gray-400" /> Description
+                    <FileText className="w-5 h-5 text-gray-400" /> {localize("ui.descriptionLabel", "Description")}
                     </h4>
                     <p className="text-gray-300 text-base leading-relaxed">
-                        {data.description}
+                    {localizedDescription}
                     </p>
                 </div>
 
                 {/* Key Details */}
                 <div>
                     <h4 className="text-base font-bold text-white mb-3 flex items-center gap-2">
-                        <Award className="w-5 h-5 text-gray-400" /> Key Achievements
+                    <Award className="w-5 h-5 text-gray-400" /> {localize("ui.keyAchievements", "Key Achievements")}
                     </h4>
                     <ul className="space-y-3">
-                        {data.details.map((detail: string, i: number) => (
+                    {localizedDetails.map((detail: string, i: number) => (
                             <li key={i} className="flex items-start gap-3 text-sm text-gray-300 bg-white/5 p-3 rounded-lg border border-white/5">
-                                <span className="mt-1.5 w-2 h-2 rounded-full bg-blue-500 flex-shrink-0" />
+                                <span className="mt-1.5 w-2 h-2 rounded-full bg-blue-500 shrink-0" />
                                 <span className="leading-relaxed">{detail}</span>
                             </li>
                         ))}
@@ -119,7 +141,7 @@ export default function CertificateModal({ data, onClose }: Props) {
 
             <div className="mt-8 pt-4 border-t border-gray-800">
                <button onClick={onClose} className="w-full py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white font-bold transition-colors">
-                  Close Window
+                {localize("ui.closeWindow", "Close Window")}
                </button>
             </div>
         </div>

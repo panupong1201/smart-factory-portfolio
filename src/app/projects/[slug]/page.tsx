@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { projects } from "@/data/projects";
 import { notFound, useParams } from "next/navigation";
 import Image from "next/image";
@@ -23,8 +24,54 @@ import CompareGallery from "@/components/project/CompareGallery";
 import SystemArchitecture from "@/components/project/SystemArchitecture";
 import Gallery from "@/components/Gallery";
 
+type HeadingTone = "blue" | "red" | "green" | "purple";
+
+function GlowHeading({
+  children,
+  tone = "blue",
+  className = "",
+}: {
+  children: ReactNode;
+  tone?: HeadingTone;
+  className?: string;
+}) {
+  const tones = {
+    blue: {
+      text: "bg-linear-to-r from-white via-blue-100 to-cyan-300",
+      line: "bg-linear-to-r from-transparent via-cyan-400/80 to-transparent",
+      glow: "drop-shadow-[0_0_14px_rgba(56,189,248,0.35)]",
+    },
+    red: {
+      text: "bg-linear-to-r from-white via-red-100 to-red-300",
+      line: "bg-linear-to-r from-transparent via-red-400/80 to-transparent",
+      glow: "drop-shadow-[0_0_14px_rgba(248,113,113,0.35)]",
+    },
+    green: {
+      text: "bg-linear-to-r from-white via-emerald-100 to-green-300",
+      line: "bg-linear-to-r from-transparent via-emerald-400/80 to-transparent",
+      glow: "drop-shadow-[0_0_14px_rgba(52,211,153,0.35)]",
+    },
+    purple: {
+      text: "bg-linear-to-r from-white via-purple-100 to-fuchsia-300",
+      line: "bg-linear-to-r from-transparent via-purple-400/80 to-transparent",
+      glow: "drop-shadow-[0_0_14px_rgba(192,132,252,0.35)]",
+    },
+  } as const;
+
+  const selectedTone = tones[tone];
+
+  return (
+    <span className={`relative inline-block ${className}`}>
+      <span className={`text-transparent bg-clip-text ${selectedTone.text} ${selectedTone.glow}`}>
+        {children}
+      </span>
+      <span className={`pointer-events-none absolute -bottom-1 left-0 h-px w-full ${selectedTone.line}`} />
+    </span>
+  );
+}
+
 export default function ProjectPage() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const params = useParams();
   const slug = params?.slug as string;
   const projectIndex = projects.findIndex((p) => p.slug === slug);
@@ -49,20 +96,20 @@ export default function ProjectPage() {
             className="object-cover opacity-30"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/60 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#050505]/80 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-[#050505] via-[#050505]/60 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-r from-[#050505]/80 to-transparent" />
 
           <div className="absolute bottom-0 left-0 w-full p-6 md:p-12">
             <div className="max-w-5xl mx-auto">
               <Link
-                href="/#projects"
+                href={`/${lang}#projects`}
                 className="inline-flex items-center gap-2 text-gray-400 hover:text-white mb-6 transition-colors group"
               >
                 <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />{" "}
                 {t("projectDetail.backToProjects")}
               </Link>
               <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight max-w-3xl">
-                {t(`projects.${project.slug}.title`)}
+                <GlowHeading tone="blue">{t(`projects.${project.slug}.title`)}</GlowHeading>
               </h1>
               <div className="flex flex-wrap gap-2">
                 {project.tech.map((tech: string) => (
@@ -104,7 +151,9 @@ export default function ProjectPage() {
                 <div className="p-2 bg-red-500/20 rounded-lg text-red-400">
                   <AlertCircle className="w-6 h-6" />
                 </div>
-                <h3 className="text-2xl font-bold text-white">{t("projectDetail.theChallenge")}</h3>
+                <h3 className="text-2xl font-bold text-white">
+                  <GlowHeading tone="red">{t("projectDetail.theChallenge")}</GlowHeading>
+                </h3>
               </div>
               <p className="text-gray-300 leading-relaxed text-lg relative z-10">
                 {t(`projects.${project.slug}.problem`)}
@@ -115,7 +164,9 @@ export default function ProjectPage() {
                 <div className="p-2 bg-blue-500/20 rounded-lg text-blue-400">
                   <CheckCircle className="w-6 h-6" />
                 </div>
-                <h3 className="text-2xl font-bold text-white">{t("projectDetail.theSolution")}</h3>
+                <h3 className="text-2xl font-bold text-white">
+                  <GlowHeading tone="blue">{t("projectDetail.theSolution")}</GlowHeading>
+                </h3>
               </div>
               <p className="text-gray-300 leading-relaxed text-lg relative z-10">
                 {t(`projects.${project.slug}.solution`)}
@@ -127,7 +178,7 @@ export default function ProjectPage() {
           {project.compareImages && (
             <div className="mb-24">
               <h3 className="text-2xl font-bold text-white mb-8 text-center">
-                {t("projectDetail.transformationEvidence")}
+                <GlowHeading tone="purple">{t("projectDetail.transformationEvidence")}</GlowHeading>
               </h3>
               <CompareGallery data={project.compareImages} />
             </div>
@@ -138,7 +189,7 @@ export default function ProjectPage() {
             <div className="mb-24">
               <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-3">
                 <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />{" "}
-                {t("projectDetail.systemDemo")}
+                <GlowHeading tone="red">{t("projectDetail.systemDemo")}</GlowHeading>
               </h3>
               <div className="relative aspect-video rounded-2xl overflow-hidden border border-white/10 bg-gray-900 shadow-2xl">
                 {!project.videoDemo.includes("youtube") ? (
@@ -166,7 +217,7 @@ export default function ProjectPage() {
           {project.architecture && (
             <div className="mb-20">
               <h3 className="text-2xl font-bold text-white mb-8 text-center">
-                {t("projectDetail.systemArchitecture")}
+                <GlowHeading tone="blue">{t("projectDetail.systemArchitecture")}</GlowHeading>
               </h3>
               <SystemArchitecture data={project.architecture} />
             </div>
@@ -174,7 +225,7 @@ export default function ProjectPage() {
 
           {/* 🔥 7. [NEW] Lessons Learned & Challenges Overcome 🔥 */}
           {project.lessonsLearned && (
-            <div className="mb-24 bg-gradient-to-br from-blue-900/10 to-transparent border border-blue-500/20 rounded-3xl p-8 md:p-12 relative overflow-hidden group">
+            <div className="mb-24 bg-linear-to-br from-blue-900/10 to-transparent border border-blue-500/20 rounded-3xl p-8 md:p-12 relative overflow-hidden group">
                 <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 group-hover:opacity-10 transition-all duration-700 pointer-events-none">
                     <Lightbulb className="w-48 h-48 text-blue-500" />
                 </div>
@@ -183,7 +234,9 @@ export default function ProjectPage() {
                         <div className="p-3 bg-blue-500/20 border border-blue-500/30 rounded-xl text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.2)]">
                             <Lightbulb className="w-6 h-6" />
                         </div>
-                        <h3 className="text-2xl font-bold text-white">{t("projectDetail.lessonsLearned")}</h3>
+                        <h3 className="text-2xl font-bold text-white">
+                          <GlowHeading tone="purple">{t("projectDetail.lessonsLearned")}</GlowHeading>
+                        </h3>
                     </div>
                     <div className="text-gray-300 leading-relaxed text-lg whitespace-pre-line space-y-4">
                       {t(`projects.${project.slug}.lessonsLearned`)}
@@ -195,12 +248,12 @@ export default function ProjectPage() {
           {/* 8. Business Impact */}
           <div className="mb-20 text-center">
             <h3 className="text-2xl font-bold text-white mb-8">
-              {t("projectDetail.businessImpact")}
+              <GlowHeading tone="green">{t("projectDetail.businessImpact")}</GlowHeading>
             </h3>
             <div className="inline-block relative">
               <div className="absolute inset-0 bg-green-500/20 blur-2xl rounded-full" />
               <div className="relative bg-black/60 border border-green-500/30 px-12 py-8 rounded-3xl backdrop-blur-md">
-                <span className="text-3xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-500">
+                <span className="text-3xl md:text-5xl font-bold text-transparent bg-clip-text bg-linear-to-r from-green-400 to-emerald-500">
                   {t(`projects.${project.slug}.impact`)}
                 </span>
               </div>
@@ -211,14 +264,16 @@ export default function ProjectPage() {
           <div className="grid md:grid-cols-3 gap-12 mb-20">
             <div className="md:col-span-2 prose prose-invert prose-lg max-w-none text-gray-300">
               <h3 className="text-2xl font-bold text-white mb-4">
-                {t("projects.detailHeading")}
+                <GlowHeading tone="blue">{t("projects.detailHeading")}</GlowHeading>
               </h3>
               <p className="whitespace-pre-line leading-relaxed">
                 {t(`projects.${project.slug}.content`)}
               </p>
             </div>
             <div className="bg-white/5 border border-white/10 rounded-2xl p-6 h-fit">
-              <h4 className="font-bold text-white mb-4">{t("projects.technologies")}</h4>
+              <h4 className="font-bold text-white mb-4">
+                <GlowHeading tone="blue">{t("projects.technologies")}</GlowHeading>
+              </h4>
               <ul className="space-y-3">
                 {project.tech.map((t: string) => (
                   <li
@@ -240,15 +295,17 @@ export default function ProjectPage() {
           )}
 
           {/* 🔥 11. Call to Action (CTA) 🔥 */}
-          <div className="mb-24 bg-gradient-to-r from-blue-900/20 to-purple-900/20 border border-white/10 rounded-3xl p-10 text-center relative overflow-hidden group">
+          <div className="mb-24 bg-linear-to-r from-blue-900/20 to-purple-900/20 border border-white/10 rounded-3xl p-10 text-center relative overflow-hidden group">
               <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
               <div className="relative z-10">
-                  <h3 className="text-3xl font-bold text-white mb-4">{t("projects.needSystem")}</h3>
+                  <h3 className="text-3xl font-bold text-white mb-4">
+                    <GlowHeading tone="purple">{t("projects.needSystem")}</GlowHeading>
+                  </h3>
                   <p className="text-gray-400 mb-8 max-w-xl mx-auto">
                       {t("projects.ctaText")}
                   </p>
                   <Link 
-                      href="/#contact" 
+                      href={`/${lang}#contact`} 
                       className="inline-flex items-center gap-3 bg-white text-black px-8 py-4 rounded-full font-bold transition-transform hover:scale-105 shadow-[0_0_30px_rgba(255,255,255,0.2)] hover:shadow-[0_0_40px_rgba(255,255,255,0.4)]"
                   >
                       <Mail className="w-5 h-5 text-blue-600" /> {t("projects.discussProject")}
@@ -260,13 +317,13 @@ export default function ProjectPage() {
           <div className="border-t border-white/10 pt-12">
             <p className="text-sm text-gray-500 font-mono mb-4">{t("projectDetail.nextProject")}</p>
             <Link
-              href={`/projects/${nextProject.slug}`}
+              href={`/${lang}/projects/${nextProject.slug}`}
               className="group block"
             >
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-3xl md:text-5xl font-bold text-white group-hover:text-blue-400 transition-colors">
-                    {t(`projects.${nextProject.slug}.title`)}
+                    <GlowHeading tone="blue">{t(`projects.${nextProject.slug}.title`)}</GlowHeading>
                   </h3>
                   <p className="text-gray-500 mt-2">
                     {nextProject.tech.slice(0, 3).join(" • ")}

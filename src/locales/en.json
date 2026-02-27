@@ -1,5 +1,5 @@
 {
-  "navbar": { "en": "EN", "th": "TH", "hire": "HIRE ME" },
+  "navbar": { "en": "EN", "th": "TH", "showcase": "SELECTED PROJECTS" },
   "nav": {
     "about": "About",
     "skills": "Skills",
@@ -10,7 +10,10 @@
   },
   "hero": {
     "systemOnline": "System Online",
+    "headingPrefix": "I BUILD",
+    "headingMain": "SMART FACTORIES",
     "greeting": "Hi, I'm Ton. Bridging the gap between Hardware (OT) and Software (IT).",
+    "transformingLine": "Transforming manual production lines into automated intelligence.",
     "currentRoleLabel": "Current Role",
     "currentRole": "Automation Engineer",
     "syncing": "SYNCING...",
@@ -41,12 +44,34 @@
     "servicesList": "Whether you are looking to implement a Real-time IoT Dashboard, automate defect detection with AI Vision, or need expert consultation on Industrial Automation, I am ready to help.",
     "letsCollaborate": "Let's collaborate to bridge the gap between OT & IT, turning your machine data into actionable insights that drive real efficiency.",
     "sendEmail": "Send Email",
+    "openForm": "Send Message",
+    "lineChat": "Chat on LINE",
+    "formLabel": "Direct Contact",
+    "formTitle": "Send me a message",
+    "formSubtitle": "Fill in the form below and I will get back to you as soon as possible.",
+    "nameLabel": "Name",
+    "namePlaceholder": "Your name",
+    "emailLabel": "Email",
+    "emailPlaceholder": "you@example.com",
+    "subjectLabel": "Subject",
+    "subjectPlaceholder": "Project inquiry / Collaboration",
+    "messageLabel": "Message",
+    "messagePlaceholder": "Tell me about your project requirements...",
+    "cancel": "Cancel",
+    "sendNow": "Send now",
+    "sending": "Sending...",
+    "requiredFields": "Please fill in all required fields.",
+    "invalidEmail": "Please enter a valid email address.",
+    "successMessage": "Message sent successfully. Thank you!",
+    "errorGeneric": "Unable to send message right now. Please try again.",
     "location": "Rayong, Thailand",
     "systemReady": "System.ready_for_connection(true)",
-    "copyright": "© 2026 Panupong Nokaew. All Systems Operational."
+    "copyright": "© 2026 ภาณุพงษ์ หน่อแก้ว (Ton). All Systems Operational."
   },
   "projects": {
     "sectionNext": "NEXT PROJECT",
+    "projectDatabase": "Project Database",
+    "selectedWorks": "Selected Works",
     "systemGallery": "System Gallery",
     "needSystem": "Need a system like this?",
     "technologies": "Technologies",
@@ -154,6 +179,22 @@
     "pmSystem": "PM System Planning",
     "preventiveMaintenance": "Preventive Maintenance Standards"
   },
+  "projectDetail": {
+    "backToProjects": "Back to Projects",
+    "role": "Role",
+    "year": "Year",
+    "duration": "Duration",
+    "type": "Type",
+    "industrialAutomation": "Industrial Automation",
+    "theChallenge": "The Challenge",
+    "theSolution": "The Solution",
+    "transformationEvidence": "Transformation Evidence",
+    "systemDemo": "System Demo",
+    "systemArchitecture": "System Architecture",
+    "lessonsLearned": "Lessons Learned & Challenges",
+    "businessImpact": "Business Impact",
+    "nextProject": "Next Project"
+  },
   "timeline": {
     "versionHistory": "Version History",
     "systemEvolution": "System Evolution",
@@ -173,11 +214,25 @@
     "v5Desc": "Scaled AI Vision across production lines and integrated PLC + sensors into full automation loops, targeting autonomous production with predictive maintenance.",
     "v5Tech": "System Architect"
   },
-  "certificates": { "verified": "Verified Credentials", "achievements": "Achievements & Awards" },
+  "certificates": {
+    "verified": "Verified Credentials",
+    "achievements": "Achievements & Awards",
+    "showLess": "Show Less",
+    "viewAllCollection": "View All Collection",
+    "categories": {
+      "all": "All",
+      "achievement": "Achievement",
+      "award": "Award",
+      "certificate": "Certificate"
+    }
+  },
   "ui": {
     "tapToView": "Tap to view",
     "issuedBy": "Issued By",
-    "technologiesLabel": "Technologies"
+    "technologiesLabel": "Technologies",
+    "descriptionLabel": "Description",
+    "keyAchievements": "Key Achievements",
+    "closeWindow": "Close Window"
   },
   "buttons": {
     "exploreSystem": "Explore System",

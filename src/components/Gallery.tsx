@@ -93,7 +93,7 @@ export default function Gallery({ images }: { images: string[] }) {
                 </div>
                 
                 {/* Tech Line Decor */}
-                <div className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-blue-500 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+                <div className="absolute bottom-0 left-0 w-full h-[2px] bg-linear-to-r from-blue-500 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
             </motion.div>
             ))}
         </AnimatePresence>
@@ -126,7 +126,7 @@ export default function Gallery({ images }: { images: string[] }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[9999] bg-black/95 backdrop-blur-xl flex items-center justify-center p-4 md:p-10"
+            className="fixed inset-0 z-9999 bg-black/95 backdrop-blur-xl flex items-center justify-center p-4 md:p-10"
             onClick={closeGallery}
           >
             <button

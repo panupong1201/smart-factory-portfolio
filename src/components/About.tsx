@@ -76,9 +76,9 @@ export default function About() {
 
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-8 leading-tight tracking-tight">
                 <span className="block text-white/95 drop-shadow-[0_0_8px_rgba(255,255,255,0.1)]">{t("about.notJustCode")}</span>
-                <span className="relative inline-block mt-1 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-300 to-purple-500 drop-shadow-[0_0_16px_rgba(99,102,241,0.35)]">
+                <span className="relative inline-block mt-1 text-transparent bg-clip-text bg-linear-to-r from-blue-400 via-cyan-300 to-purple-500 drop-shadow-[0_0_16px_rgba(99,102,241,0.35)]">
                     {t("about.itsEngineering")}
-                    <span className="pointer-events-none absolute -bottom-1 left-0 h-px w-full bg-gradient-to-r from-transparent via-purple-400/80 to-transparent" />
+                    <span className="pointer-events-none absolute -bottom-1 left-0 h-px w-full bg-linear-to-r from-transparent via-purple-400/80 to-transparent" />
                 </span>
             </h2>
 

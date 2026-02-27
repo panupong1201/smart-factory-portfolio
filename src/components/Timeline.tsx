@@ -10,6 +10,7 @@ import {
   GitCommit
 } from "lucide-react";
 import { useLanguage } from "./LanguageProvider";
+import GlowHeading from "@/components/ui/GlowHeading";
 
 export default function Timeline() {
   const { t } = useLanguage();
@@ -93,7 +94,7 @@ export default function Timeline() {
             viewport={{ once: true }}
             className="text-4xl md:text-5xl font-bold text-white mb-2"
           >
-            {t("timeline.systemEvolution")}
+            <GlowHeading tone="purple">{t("timeline.systemEvolution")}</GlowHeading>
           </motion.h2>
         </div>
 
@@ -106,7 +107,7 @@ export default function Timeline() {
                initial={{ x: "-100%" }}
                whileInView={{ x: "0%" }}
                transition={{ duration: 1.5, ease: "easeInOut" }}
-               className="h-full w-full bg-gradient-to-r from-blue-900 via-purple-500 to-blue-500 shadow-[0_0_20px_rgba(168,85,247,0.8)]"
+               className="h-full w-full bg-linear-to-r from-blue-900 via-purple-500 to-blue-500 shadow-[0_0_20px_rgba(168,85,247,0.8)]"
              />
           </div>
 
@@ -119,7 +120,7 @@ export default function Timeline() {
           >
             <div className="relative group cursor-pointer">
               <Rocket className="w-16 h-16 text-white drop-shadow-[0_0_25px_rgba(255,255,255,0.8)] rotate-45 transform group-hover:scale-110 transition-transform" />
-              <div className="absolute top-1/2 left-0 w-32 h-16 bg-gradient-to-l from-orange-500 via-red-600 to-transparent blur-2xl transform -translate-y-1/2 -translate-x-full opacity-80 animate-pulse" />
+              <div className="absolute top-1/2 left-0 w-32 h-16 bg-linear-to-l from-orange-500 via-red-600 to-transparent blur-2xl transform -translate-y-1/2 -translate-x-full opacity-80 animate-pulse" />
               <div className="absolute top-1/2 left-0 w-40 h-1 bg-blue-400 blur-md transform -translate-y-1/2 -translate-x-full" />
             </div>
           </motion.div>
@@ -129,8 +130,8 @@ export default function Timeline() {
             {items.map((item, index) => {
               const isEven = index % 2 === 0;
               return (
-                // ✅ Wrapper ยังคงมี hover:z-[100] เพื่อแก้ปัญหาการ์ดซ้อนทับ
-                <div key={index} className="relative flex flex-col items-center justify-center h-full group hover:z-[100]">
+                // ✅ Wrapper ยังคงมี hover:z-100 เพื่อแก้ปัญหาการ์ดซ้อนทับ
+                <div key={index} className="relative flex flex-col items-center justify-center h-full group hover:z-100">
                   
                   {/* Vertical Connector Line */}
                   <motion.div 
@@ -172,7 +173,9 @@ export default function Timeline() {
                       <div>
                         <span className="absolute top-3 right-3 text-[10px] font-mono text-gray-400 bg-black/50 px-2 py-0.5 rounded border border-gray-700">{item.version}</span>
                         <span className="text-blue-400 font-mono font-bold text-sm block mb-1">{item.year}</span>
-                        <h3 className="text-base font-bold text-white mb-2 leading-tight">{item.title}</h3>
+                        <h3 className="text-base font-bold text-white mb-2 leading-tight">
+                          <GlowHeading tone="blue">{item.title}</GlowHeading>
+                        </h3>
                         
                         {/* ข้อความ: ปกติซ่อน (...) แต่พอ Hover จะโชว์หมด (line-clamp-none) */}
                         <p className="text-gray-400 text-xs leading-relaxed mb-3 line-clamp-3 group-hover:line-clamp-none transition-all duration-300">
@@ -195,7 +198,7 @@ export default function Timeline() {
 
         {/* --- MOBILE VIEW --- */}
         <div className="lg:hidden relative pl-4">
-          <div className="absolute left-[19px] top-0 bottom-0 w-[2px] bg-gradient-to-b from-blue-900 via-purple-500 to-blue-500 opacity-50" />
+          <div className="absolute left-[19px] top-0 bottom-0 w-[2px] bg-linear-to-b from-blue-900 via-purple-500 to-blue-500 opacity-50" />
           <div className="space-y-12">
             {items.map((item, index) => (
               <motion.div 
@@ -213,7 +216,9 @@ export default function Timeline() {
                   <div className="flex justify-between items-start mb-2">
                     <div>
                       <span className="text-blue-400 font-mono text-sm font-bold block">{item.year}</span>
-                      <h3 className="text-lg font-bold text-white">{item.title}</h3>
+                      <h3 className="text-lg font-bold text-white">
+                        <GlowHeading tone="blue">{item.title}</GlowHeading>
+                      </h3>
                     </div>
                     <span className="text-[10px] font-mono text-gray-500 bg-gray-800 px-2 py-1 rounded">{item.version}</span>
                   </div>

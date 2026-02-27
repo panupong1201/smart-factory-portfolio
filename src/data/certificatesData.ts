@@ -1,12 +1,10 @@
 // src/data/certificatesData.ts
 import { 
   Trophy, 
-  TrendingUp, 
   CheckCircle2, 
   Cpu, 
   Zap, 
   ShieldCheck, 
-  BookOpen, 
   Award, 
   Monitor, 
   Truck, 

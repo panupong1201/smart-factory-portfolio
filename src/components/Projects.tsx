@@ -1,14 +1,15 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowUpRight, Monitor, ExternalLink } from "lucide-react";
+import { ArrowUpRight, Monitor } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { projects } from "@/data/projects";
 import { useLanguage } from "./LanguageProvider";
+import GlowHeading from "@/components/ui/GlowHeading";
 
 export default function Projects() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   return (
     <section
       id="projects"
@@ -41,7 +42,7 @@ export default function Projects() {
                 <Monitor className="w-5 h-5" />
               </div>
               <span className="text-sm font-mono tracking-widest uppercase">
-                {t("projects.projectDatabase")}
+                <GlowHeading tone="blue">{t("projects.projectDatabase")}</GlowHeading>
               </span>
             </motion.div>
             <motion.h2
@@ -49,15 +50,28 @@ export default function Projects() {
               whileInView={{ opacity: 1, y: 0 }}
               className="text-4xl md:text-5xl font-bold text-white tracking-tight"
             >
-              {t("projects.selectedWorks")}
+              <GlowHeading tone="blue">{t("projects.selectedWorks")}</GlowHeading>
             </motion.h2>
           </div>
           
-          <div className="hidden md:block text-right">
-             <p className="text-gray-500 text-sm font-mono">
-                {t("projects.statusOnline")}
-             </p>
-             <p className="text-gray-600 text-xs mt-1">{t("projects.showingAll")}</p>
+          <div className="hidden md:flex flex-col items-end">
+             <div className="flex items-center gap-2 mb-1">
+                <div className="flex h-2 w-2 relative">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                </div>
+                <p className="text-green-400 text-sm font-mono tracking-wider">
+                    {t("projects.statusOnline")}
+                </p>
+             </div>
+             <motion.p 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                className="text-gray-500 text-xs font-mono"
+             >
+                {t("projects.showingAll")}
+             </motion.p>
           </div>
         </div>
 
@@ -71,7 +85,7 @@ export default function Projects() {
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Link href={`/projects/${project.slug}`} className="block h-full group">
+              <Link href={`/${lang}/projects/${project.slug}`} className="block h-full group">
                 <motion.div 
                     whileHover={{ y: -10 }} // 🚀 Effect 1: ลอยขึ้นเมื่อ Hover
                     transition={{ type: "spring", stiffness: 300 }}
@@ -80,7 +94,7 @@ export default function Projects() {
                   
                   {/* 1. Image Thumbnail with Zoom Effect */}
                   <div className="relative w-full h-56 overflow-hidden bg-gray-800">
-                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent z-10 opacity-60" />
+                    <div className="absolute inset-0 bg-linear-to-t from-gray-900 via-transparent to-transparent z-10 opacity-60" />
                     
                     {/* 🚀 Effect 2: รูปภาพซูมเข้าช้าๆ */}
                     <div className="relative w-full h-full group-hover:scale-110 transition-transform duration-700 ease-out">
@@ -88,6 +102,7 @@ export default function Projects() {
                         src={project.image}
                         alt={project.title}
                         fill
+                        loading={index < 3 ? "eager" : "lazy"}
                         unoptimized
                         className="object-cover opacity-90 group-hover:opacity-100 transition-opacity"
                         onError={(e) => {
@@ -95,7 +110,7 @@ export default function Projects() {
                         }}
                       />
                       {/* Color Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 mix-blend-overlay opacity-40 group-hover:opacity-20 transition-opacity" />
+                      <div className="absolute inset-0 bg-linear-to-br from-blue-500/20 to-purple-500/20 mix-blend-overlay opacity-40 group-hover:opacity-20 transition-opacity" />
                     </div>
 
                     {/* Category Badge */}
@@ -107,17 +122,17 @@ export default function Projects() {
                   </div>
 
                   {/* 2. Content Section */}
-                  <div className="p-6 flex flex-col flex-grow relative">
+                  <div className="p-6 flex flex-col grow relative">
                     
                     <div className="flex justify-between items-start mb-3">
                         <h3 className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors line-clamp-1">
-                        {t(`projects.${project.slug}.title`)}
+                          <GlowHeading tone="cyan">{t(`projects.${project.slug}.title`)}</GlowHeading>
                         </h3>
                         {/* 🚀 Effect 3: ลูกศรพุ่งเฉียง */}
                         <ArrowUpRight className="w-5 h-5 text-gray-500 group-hover:text-blue-400 group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform duration-300" />
                     </div>
 
-                    <p className="text-gray-400 text-sm leading-relaxed mb-6 line-clamp-2 flex-grow font-light">
+                    <p className="text-gray-400 text-sm leading-relaxed mb-6 line-clamp-2 grow font-light">
                       {t(`projects.${project.slug}.description`)}
                     </p>
 

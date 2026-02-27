@@ -7,13 +7,23 @@ import { certificatesData } from "@/data/certificatesData"; // ดึงข้�
 import CertificateCard from "@/components/ui/CertificateCard"; // ดึงการ์ดมา
 import CertificateModal from "@/components/ui/CertificateModal"; // ดึง Modal มา
 import { useLanguage } from "./LanguageProvider";
+import GlowHeading from "@/components/ui/GlowHeading";
 
-const categories = ["All", "Achievement", "Award", "Certificate"];
+const categoryOptions = [
+  { value: "All", key: "all" },
+  { value: "Achievement", key: "achievement" },
+  { value: "Award", key: "award" },
+  { value: "Certificate", key: "certificate" },
+];
 
 export default function Certificates() {
   const { t } = useLanguage();
+  const localize = (key: string, fallback: string) => {
+    const translated = t(key);
+    return translated === key ? fallback : translated;
+  };
   const [activeCategory, setActiveCategory] = useState("All");
-  const [selectedCert, setSelectedCert] = useState<any>(null);
+  const [selectedCert, setSelectedCert] = useState<typeof certificatesData[0] | null>(null);
   const [showAll, setShowAll] = useState(false); // state สำหรับปุ่ม View More
 
   const filteredCerts = activeCategory === "All" 
@@ -33,7 +43,7 @@ export default function Certificates() {
     <section id="certificates" className="py-24 px-6 bg-[#050505] relative overflow-hidden">
       
       {/* Background Decor */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-900/10 blur-[100px] rounded-full pointer-events-none opacity-30" />
+      <div className="absolute top-0 right-0 w-125 h-125 bg-blue-900/10 blur-[100px] rounded-full pointer-events-none opacity-30" />
 
       <div className="max-w-7xl mx-auto relative z-10">
         
@@ -48,21 +58,23 @@ export default function Certificates() {
             <Trophy className="w-4 h-4 text-yellow-500" />
             <span className="text-yellow-200 text-xs font-mono tracking-widest uppercase">{t("certificates.verified")}</span>
           </motion.div>
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-8">{t("certificates.achievements")}</h2>
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-8">
+            <GlowHeading tone="purple">{t("certificates.achievements")}</GlowHeading>
+          </h2>
 
           {/* Filter Buttons */}
           <div className="flex flex-wrap justify-center gap-2 mb-8">
-            {categories.map((cat) => (
+            {categoryOptions.map((cat) => (
               <button
-                key={cat}
-                onClick={() => handleCategoryChange(cat)}
+                key={cat.value}
+                onClick={() => handleCategoryChange(cat.value)}
                 className={`px-6 py-2 rounded-full text-sm font-mono transition-all border ${
-                  activeCategory === cat 
+                  activeCategory === cat.value 
                     ? "bg-blue-600 border-blue-500 text-white shadow-[0_0_15px_rgba(37,99,235,0.5)]" 
                     : "bg-gray-900/50 border-gray-700 text-gray-400 hover:border-gray-500 hover:text-white"
                 }`}
               >
-                {cat}
+                {localize(`certificates.categories.${cat.key}`, cat.value)}
               </button>
             ))}
           </div>

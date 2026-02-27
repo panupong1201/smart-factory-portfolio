@@ -1,5 +1,3 @@
-import { after } from "next/dist/server/after/after";
-
 export const projects = [
   // =====================================================================
   // PROJECT 1: Line Stop Monitoring System

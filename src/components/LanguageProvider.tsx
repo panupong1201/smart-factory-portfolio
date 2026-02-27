@@ -2,7 +2,7 @@
 
 import React, { createContext, useState, useEffect, useContext } from "react";
 
-type Messages = Record<string, any>;
+type Messages = Record<string, unknown>;
 
 interface LangContext {
   lang: string;
@@ -18,7 +18,13 @@ const LangCtx = createContext<LangContext>({
 
 import { useRouter } from "next/navigation";
 
-export function LanguageProvider({ children, initialLang }: { children: React.ReactNode; initialLang?: string }) {
+export function LanguageProvider({
+  children,
+  initialLang,
+}: {
+  children: React.ReactNode;
+  initialLang?: string;
+}) {
   const router = useRouter();
   const [lang, _setLang] = useState(initialLang || "en");
   const [messages, setMessages] = useState<Messages>({});
@@ -32,21 +38,25 @@ export function LanguageProvider({ children, initialLang }: { children: React.Re
     const { pathname, search, hash } = window.location;
     // Remove the current locale from pathname, then prepend the new locale
     const pathWithoutLocale = pathname.replace(/^\/[a-z]{2}(?:\/|$)/, "/");
-    router.replace(`/${l}${pathWithoutLocale === "/" ? "" : pathWithoutLocale}${search}${hash}`);
+    router.replace(
+      `/${l}${pathWithoutLocale === "/" ? "" : pathWithoutLocale}${search}${hash}`,
+    );
   };
 
   useEffect(() => {
-    const saved = typeof localStorage !== "undefined" && localStorage.getItem("lang");
+    const saved =
+      typeof localStorage !== "undefined" && localStorage.getItem("lang");
     if (saved) _setLang(saved);
   }, []);
 
   useEffect(() => {
     // if router locale differs, sync
-    if (typeof window !== "undefined" && (window as any).__NEXT_DATA__?.locale) {
-      const rloc = (window as any).__NEXT_DATA__.locale;
+    const win = window as unknown as { __NEXT_DATA__?: { locale?: string } };
+    if (typeof window !== "undefined" && win.__NEXT_DATA__?.locale) {
+      const rloc = win.__NEXT_DATA__.locale;
       if (rloc && rloc !== lang) _setLang(rloc);
     }
-  }, []);
+  }, [lang]);
 
   useEffect(() => {
     import(`../locales/${lang}.json`).then((mod) => {
@@ -56,9 +66,10 @@ export function LanguageProvider({ children, initialLang }: { children: React.Re
 
   const t = (key: string) => {
     const parts = key.split(".");
-    let result: any = messages;
+    let result: unknown = messages;
     for (const p of parts) {
-      if (result && typeof result === "object") result = result[p];
+      if (result && typeof result === "object")
+        result = (result as Record<string, unknown>)[p];
       else return key;
     }
     if (typeof result === "string") return result;
@@ -66,9 +77,7 @@ export function LanguageProvider({ children, initialLang }: { children: React.Re
   };
 
   return (
-    <LangCtx.Provider value={{ lang, setLang, t }}>
-      {children}
-    </LangCtx.Provider>
+    <LangCtx.Provider value={{ lang, setLang, t }}>{children}</LangCtx.Provider>
   );
 }
 
