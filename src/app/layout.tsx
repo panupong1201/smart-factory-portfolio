@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ภาณุพงษ์ หน่อแก้ว (Ton) | Smart Factory & Automation Engineer",
+  title: "Panupong Ton | Smart Factory & Automation Engineer",
   description: "Professional portfolio showcasing expertise in Smart Factory, Industrial Automation, PLC Programming, AI Vision, IoT solutions, and system architecture. Bridging OT & IT for practical, reliable manufacturing systems.",
 };
 
