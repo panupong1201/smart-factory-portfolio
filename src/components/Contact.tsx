@@ -1,7 +1,18 @@
 "use client";
 
 import { AnimatePresence, motion, useMotionTemplate, useMotionValue } from "framer-motion";
-import { Mail, MapPin, ArrowRight, Terminal, X, SendHorizontal, MessageCircle } from "lucide-react";
+import {
+    Mail,
+    MapPin,
+    ArrowRight,
+    Terminal,
+    X,
+    SendHorizontal,
+    MessageCircle,
+    Loader2,
+    CheckCircle2,
+    Paperclip,
+} from "lucide-react";
 import { MouseEvent, useEffect, useState } from "react";
 import { useLanguage } from "./LanguageProvider";
 import GlowHeading from "@/components/ui/GlowHeading";
@@ -10,6 +21,9 @@ import { trackContactClick } from "@/lib/analytics";
 export default function Contact() {
   const { t } = useLanguage();
     const lineUrl = "https://line.me/ti/p/86DDhrg2oQ";
+    const MAX_FILE_SIZE = 5 * 1024 * 1024;
+    const MAX_TOTAL_FILE_SIZE = 15 * 1024 * 1024;
+    const MAX_FILES = 5;
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -20,8 +34,14 @@ export default function Contact() {
         subject: "",
         message: "",
     });
-    const [submitState, setSubmitState] = useState<{ type: "success" | "error"; message: string } | null>(null);
-  
+    const [submitState, setSubmitState] = useState<{
+        type: "success" | "error";
+        message: string;
+    } | null>(null);
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+    const [showSentAnimation, setShowSentAnimation] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(0);
+
   // ✅ เพิ่ม State เช็คว่าโหลดหน้าเว็บเสร็จหรือยัง
   const [isMounted, setIsMounted] = useState(false);
 
@@ -46,6 +66,79 @@ export default function Contact() {
 
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+    function formatFileSize(bytes: number) {
+        if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+        return `${Math.ceil(bytes / 1024)} KB`;
+    }
+
+    function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+        const files = Array.from(e.target.files || []);
+        if (!files.length) return;
+
+        const filtered = files.filter((file) => file.size <= MAX_FILE_SIZE);
+        if (filtered.length !== files.length) {
+            setSubmitState({
+                type: "error",
+                message: t("contact.fileTooLarge"),
+            });
+        }
+
+        const merged = [...selectedFiles, ...filtered].slice(0, MAX_FILES);
+        if (selectedFiles.length + filtered.length > MAX_FILES) {
+            setSubmitState({
+                type: "error",
+                message: t("contact.maxFilesExceeded"),
+            });
+        }
+
+        setSelectedFiles(merged);
+        e.currentTarget.value = "";
+    }
+
+    function removeFile(indexToRemove: number) {
+        setSelectedFiles((prev) => prev.filter((_, index) => index !== indexToRemove));
+    }
+
+    async function fileToBase64(file: File) {
+        return await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(String(reader.result || ""));
+            reader.onerror = () => reject(new Error("Failed to read file"));
+            reader.readAsDataURL(file);
+        });
+    }
+
+    async function postContactWithProgress(payload: unknown) {
+        return await new Promise<{ ok: boolean; result: unknown }>((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "/api/contact");
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            xhr.upload.onprogress = (event) => {
+                if (!event.lengthComputable) return;
+                const progress = Math.min(100, Math.round((event.loaded / event.total) * 100));
+                setUploadProgress(progress);
+            };
+
+            xhr.onload = () => {
+                let result: unknown = null;
+                try {
+                    result = JSON.parse(xhr.responseText);
+                } catch {
+                    result = null;
+                }
+
+                resolve({
+                    ok: xhr.status >= 200 && xhr.status < 300,
+                    result,
+                });
+            };
+
+            xhr.onerror = () => reject(new Error("Network error"));
+            xhr.send(JSON.stringify(payload));
+        });
+    }
+
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setSubmitState(null);
@@ -60,27 +153,50 @@ export default function Contact() {
             return;
         }
 
-        setIsSubmitting(true);
-        try {
-            const response = await fetch("/api/contact", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(form),
-            });
+        const totalSize = selectedFiles.reduce((sum, file) => sum + file.size, 0);
+        if (totalSize > MAX_TOTAL_FILE_SIZE) {
+            setSubmitState({ type: "error", message: t("contact.totalFileTooLarge") });
+            return;
+        }
 
-            const result = await response.json();
-            if (!response.ok) {
-                setSubmitState({ type: "error", message: result?.message || t("contact.errorGeneric") });
+        setIsSubmitting(true);
+        setUploadProgress(0);
+        try {
+            const attachments = await Promise.all(
+                selectedFiles.map(async (file) => {
+                    const base64 = await fileToBase64(file);
+                    const data = base64.includes(",") ? base64.split(",")[1] : "";
+                    return {
+                        name: file.name,
+                        type: file.type || "application/octet-stream",
+                        size: file.size,
+                        data,
+                    };
+                })
+            );
+
+            const { ok, result } = await postContactWithProgress({ ...form, attachments });
+            if (!ok) {
+                const errorResult = result as { message?: string } | null;
+                setSubmitState({
+                    type: "error",
+                    message: errorResult?.message || t("contact.errorGeneric"),
+                });
                 return;
             }
 
+            setUploadProgress(100);
             setSubmitState({ type: "success", message: t("contact.successMessage") });
             setForm({ name: "", email: "", subject: "", message: "" });
+            setSelectedFiles([]);
+            setShowSentAnimation(true);
+            setTimeout(() => setShowSentAnimation(false), 2400);
         } catch {
             setSubmitState({ type: "error", message: t("contact.errorGeneric") });
         } finally {
             setIsSubmitting(false);
-        }
+            setTimeout(() => setUploadProgress(0), 600);
+    }
     }
 
   return (
@@ -88,7 +204,7 @@ export default function Contact() {
       
       {/* Background World/Network Effect with Floating Particles */}
       <div className="absolute inset-0 pointer-events-none">
-         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-900/10 blur-[120px] rounded-full animate-pulse duration-[5s]" />
+         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-200 h-200 bg-blue-900/10 blur-[120px] rounded-full animate-pulse duration-[5s]" />
          <div 
             className="absolute inset-0 opacity-20"
             style={{
@@ -303,6 +419,46 @@ export default function Contact() {
                                     />
                                 </div>
 
+                                <div>
+                                    <label className="block text-sm text-gray-300 mb-2">{t("contact.attachmentLabel")}</label>
+                                    <label className="w-full flex items-center justify-center gap-2 rounded-xl border border-dashed border-white/20 bg-white/5 px-4 py-3 text-gray-300 hover:bg-white/10 cursor-pointer transition-colors">
+                                        <Paperclip className="w-4 h-4" />
+                                        <span className="text-sm">{t("contact.attachmentAction")}</span>
+                                        <input
+                                            type="file"
+                                            multiple
+                                            onChange={handleFileSelect}
+                                            className="hidden"
+                                            accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.txt,.zip,.rar"
+                                        />
+                                    </label>
+                                    <p className="mt-2 text-xs text-gray-500">{t("contact.attachmentHint")}</p>
+
+                                    {selectedFiles.length > 0 && (
+                                        <div className="mt-3 space-y-2">
+                                            {selectedFiles.map((file, index) => (
+                                                <div
+                                                    key={`${file.name}-${file.size}-${index}`}
+                                                    className="flex items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2"
+                                                >
+                                                    <div className="min-w-0">
+                                                        <p className="text-sm text-white truncate">{file.name}</p>
+                                                        <p className="text-xs text-gray-400">{formatFileSize(file.size)}</p>
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeFile(index)}
+                                                        className="p-1 rounded-md text-gray-400 hover:text-white hover:bg-white/10"
+                                                        aria-label="Remove file"
+                                                    >
+                                                        <X className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+
                                 {submitState && (
                                     <div
                                         className={`text-sm rounded-lg px-4 py-3 border ${
@@ -312,6 +468,21 @@ export default function Contact() {
                                         }`}
                                     >
                                         {submitState.message}
+                                    </div>
+                                )}
+
+                                {isSubmitting && selectedFiles.length > 0 && (
+                                    <div className="rounded-lg border border-blue-500/30 bg-blue-500/10 px-4 py-3">
+                                        <div className="mb-2 flex items-center justify-between text-xs">
+                                            <span className="text-blue-200">{t("contact.uploadingFiles")}</span>
+                                            <span className="font-semibold text-blue-100">{uploadProgress}%</span>
+                                        </div>
+                                        <div className="h-2 w-full overflow-hidden rounded-full bg-white/10">
+                                            <div
+                                                className="h-full rounded-full bg-linear-to-r from-blue-500 to-cyan-400 transition-all duration-200"
+                                                style={{ width: `${uploadProgress}%` }}
+                                            />
+                                        </div>
                                     </div>
                                 )}
 
@@ -328,8 +499,18 @@ export default function Contact() {
                                         disabled={isSubmitting}
                                         className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white text-black font-bold hover:scale-[1.01] transition disabled:opacity-60"
                                     >
-                                        <SendHorizontal className="w-4 h-4" />
-                                        {isSubmitting ? t("contact.sending") : t("contact.sendNow")}
+                                        {isSubmitting ? (
+                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                        ) : showSentAnimation ? (
+                                            <CheckCircle2 className="w-4 h-4 text-emerald-700 animate-pulse" />
+                                        ) : (
+                                            <SendHorizontal className="w-4 h-4" />
+                                        )}
+                                        {isSubmitting
+                                            ? t("contact.sending")
+                                            : showSentAnimation
+                                                ? t("contact.sent")
+                                                : t("contact.sendNow")}
                                     </button>
                                 </div>
                             </form>

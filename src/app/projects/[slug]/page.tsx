@@ -83,6 +83,10 @@ export default function ProjectPage() {
   }
 
   const nextProject = projects[(projectIndex + 1) % projects.length];
+  const isYoutubeDemo = project.videoDemo?.includes("youtube");
+  const isDirectVideoDemo =
+    typeof project.videoDemo === "string" &&
+    /\.(mp4|webm|ogg)(\?.*)?$/i.test(project.videoDemo);
 
   return (
     <PageTransition>
@@ -192,7 +196,7 @@ export default function ProjectPage() {
                 <GlowHeading tone="red">{t("projectDetail.systemDemo")}</GlowHeading>
               </h3>
               <div className="relative aspect-video rounded-2xl overflow-hidden border border-white/10 bg-gray-900 shadow-2xl">
-                {!project.videoDemo.includes("youtube") ? (
+                {isDirectVideoDemo ? (
                   <video
                     controls
                     className="w-full h-full object-cover"
@@ -200,13 +204,21 @@ export default function ProjectPage() {
                   >
                     <source src={project.videoDemo} type="video/mp4" />
                   </video>
-                ) : (
+                ) : isYoutubeDemo ? (
                   <iframe
                     width="100%"
                     height="100%"
                     src={project.videoDemo.replace("watch?v=", "embed/")}
                     className="absolute inset-0"
                     allowFullScreen
+                  />
+                ) : (
+                  <Image
+                    src={project.videoDemo}
+                    alt={`${project.title} demo preview`}
+                    fill
+                    unoptimized
+                    className="object-cover"
                   />
                 )}
               </div>

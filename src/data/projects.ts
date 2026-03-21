@@ -27,13 +27,14 @@ export const projects = [
     duration: "3 Months",
 
     problem:
-      "Previously, recording machine downtime relied entirely on manual daily reports and hourly whiteboards by line leaders. This caused low data accuracy, missing records of momentary micro-stoppages (which skewed MES data), and delayed investigations into the root causes of non-working time. Manual Excel data entry was time-consuming and prone to human error.",
+      "Before this project, line stop recording depended on manual whiteboard notes every hour and end-of-shift Excel summaries prepared by line leaders. This workflow created major blind spots: micro-stoppages lasting only a few seconds were often missed, stop categories were inconsistently recorded across shifts, and investigation data was usually available only after production had already ended. As a result, MES reports were frequently inaccurate, root-cause analysis was delayed, and maintenance teams had no real-time visibility into recurring downtime patterns.",
 
     solution:
-      "Developed a real-time Line Stop Monitoring System accessible via Web and Mobile. By connecting Mitsubishi PLCs through a V-Box IoT Gateway directly to a PostgreSQL database, the system captures momentary stops with second-level precision, eliminating manual recording errors and enabling instant visual management.",
+      "I developed a real-time Line Stop Monitoring System accessible from web and mobile devices. Mitsubishi PLC machine-state signals are collected through a V-Box IoT gateway and streamed into PostgreSQL with timestamp-level precision. The dashboard provides live line status, stop duration, stop frequency, and process-level loss visibility, while automated data aggregation replaces manual Excel consolidation. This architecture eliminates human logging errors and gives production, maintenance, and management teams a single real-time source of truth for downtime performance.",
 
-    lessonsLearned: `- Signal Noise (Hardware): Encountered false 'STOP' signals due to electrical noise from old relays. Solved by implementing a software debouncing logic (signal must hold for >2s) before logging.
-- User Adoption (People): Operators initially resisted the system, feeling they were being 'watched'. I resolved this by designing a dashboard that actively helped them call maintenance faster, turning them into system advocates.`,
+    lessonsLearned: `- Signal Noise (Hardware): I encountered false 'STOP' triggers caused by electrical noise from aging relays. I fixed this by implementing a debouncing rule where the signal must remain stable for more than 2 seconds before being recorded.
+  - Data Standardization (Process): Different shifts used different stop naming conventions, which reduced report quality. I introduced standardized stop reason mapping and validation rules so all records could be compared consistently.
+  - User Adoption (People): Operators initially resisted the system, feeling they were being monitored. I redesigned the interface to focus on quick action (clear alarm state and maintenance call flow), which shifted perception from "monitoring people" to "helping teams recover faster."`,
 
     compareImages: [
       {
@@ -60,23 +61,36 @@ export const projects = [
     videoDemo: "/projects/line-stop/videos/line_stop.mp4",
 
     description:
-      "Real-time monitoring system utilizing V-Box and Mitsubishi PLCs to track machine stoppages with second-level accuracy.",
-    impact: "Data Accuracy Up 100% | Manual Reporting Time Down 100%",
+      "Real-time downtime intelligence platform using Mitsubishi PLC + V-Box + PostgreSQL to capture every line stop at second-level precision and replace manual reporting.",
+    impact:
+      "Data Accuracy Up 100% | Manual Reporting Time Down 100% | Real-Time Downtime Visibility Across Web/Mobile",
 
     content: `
-This project transformed a manual, paper-based top cover assembly line into a digitized, data-driven operation with perfect visual management.
+  This project transformed a manual, paper-based top cover assembly line into a real-time digital operation with actionable downtime intelligence.
 
-System Architecture:
-1. Machine Layer: Mitsubishi PLCs capture instantaneous machine status and momentary stop button activations.
-2. Edge Gateway: A V-Box IoT Gateway acts as the bridge, reliably collecting PLC memory data and transmitting it over the network.
-3. Database: A robust PostgreSQL database stores the high-frequency, time-series data.
-4. Visualization: A Next.js dashboard provides real-time monitoring accessible via standard Internet Browsers and Mobile devices.
+  Project Scope:
+  - Replaced hourly whiteboard tracking and end-of-shift Excel consolidation with automatic data capture.
+  - Connected Mitsubishi PLC stop/run signals to a centralized PostgreSQL database through a V-Box IoT gateway.
+  - Delivered a responsive Next.js dashboard for production leaders, maintenance teams, and management.
 
-Key Features:
-- Second-Level Tracking: Accurately aggregates loss time down to the exact second, fixing previous MES inaccuracies caused by manual scan errors.
-- Cross-Platform Accessibility: Real-time line status, stop counts, and process times can be checked instantly via PC and mobile applications.
-- Automated Aggregation: Completely replaces the need for end-of-shift manual Excel reporting, streamlining weekly D1/D2 operational meetings.
-`,
+  System Architecture:
+  1. Machine Layer: Mitsubishi PLCs expose machine run/stop states and momentary stop events from production equipment.
+  2. Edge Gateway: V-Box continuously reads PLC memory and securely forwards event data to the central backend.
+  3. Database Layer: PostgreSQL stores time-series stop events, durations, and categorized reason codes for historical analysis.
+  4. Application Layer: Next.js dashboard presents live status, trend summaries, and shift-based stop analytics on web/mobile.
+
+  Key Features:
+  - Second-Level Tracking: Captures and aggregates loss time down to the second, including short micro-stoppages that manual logs missed.
+  - Live Andon Visibility: Displays current line state, active stop duration, and process bottlenecks in real time.
+  - Stop Reason Analytics: Supports categorized downtime analysis for faster root-cause discussion in D1/D2 meetings.
+  - Automated Reporting: Eliminates manual end-of-shift Excel preparation with system-generated summaries.
+  - Cross-Platform Access: Enables supervisors and engineers to monitor line health from both PC and mobile.
+
+  Business Impact:
+  - Improved data credibility for MES and management review by removing manual entry errors.
+  - Reduced reporting workload for line leaders and enabled faster maintenance response cycles.
+  - Shifted problem-solving from reactive end-of-day review to real-time operational control.
+  `,
     architecture: [
       { name: "PLC", detail: "Mitsubishi", icon: "Cpu" },
       { name: "IoT Gateway", detail: "V-Box Edge", icon: "Wifi" },
@@ -174,19 +188,20 @@ Key Improvements and Business Value:
   },
 
   // =====================================================================
-  // PROJECT 3: Factory Utility Monitoring (Water, Air) - DJ MES
+  // PROJECT 3: Smart Factory Operations Control Center - DJ MES
   // =====================================================================
   {
     slug: "dj-mes-smart-utility-dashboard",
-    title: "DJ MES: Smart Factory Control Room",
+    title: "DJ MES: Smart Factory Operations Control Center",
     image: "/projects/dj-mes-smart-utility-dashboard/1.jpg",
     tech: [
       "Next.js",
       "TypeScript",
-      "Tailwind CSS",
+      "React Native",
       "Python Backend",
       "PLC (Mitsubishi/LS)",
-      "LINE Notify API",
+      "PostgreSQL",
+      "LINE Messaging API",
     ],
     gallery: [
       "/projects/dj-mes-smart-utility-dashboard/1.jpg",
@@ -207,89 +222,319 @@ Key Improvements and Business Value:
     duration: "3 Months",
 
     problem:
-      "At DongJin Electronics, injection molding machines require constant cooling water to prevent catastrophic overheating, and robotic arms rely on highly stable pneumatic air pressure to operate. Previously, operators relied on manual daily patrols to check analog gauges. The critical flaw was 'Silent Failures'—a sudden drop in air pressure or a dry cooling pit went unnoticed until robots halted or injection machines overheated, causing massive production delays.",
+      "As plant operations expanded at DongJin Electronics, critical utility status, alarm response, CCTV verification, and incident follow-up were spread across manual patrols, isolated screens, and chat-based communication. Teams could see individual signals, but they lacked a true control center to confirm abnormal conditions, coordinate response, and review what happened afterward. This created delayed decision-making, weak cross-shift visibility, and a real risk that frozen data, missed alarms, or unresolved abnormal conditions would impact molding and robotic processes before engineering teams reacted.",
 
     solution:
-      "Developed a centralized Next.js MES Dashboard with a robust 'Omnichannel Alert System' specifically designed to protect these critical utilities. The system continuously aggregates PLC data from cooling pits and main air compressors. Upon detecting dangerous thresholds, it triggers local audio/visual sirens in the control room and instantly dispatches LINE Notify alerts to the engineering team's mobile devices.",
+      "Built DJ MES into a Smart Factory Operations Control Center that combines a Next.js web command dashboard, mobile field access, a Python PLC backend, CCTV integration, historical reporting, and omnichannel alerting. The platform centralizes live plant signals, alarm workflows, camera snapshots and recordings, parameter settings, and audit-friendly operational history in one system, allowing engineers and leaders to detect, verify, and respond to incidents faster from either the control room or the factory floor.",
 
-    lessonsLearned: `- Omnichannel Alerting (Web + Mobile): Bridged the gap between local factory networks and cloud communications. By integrating the LINE Notify API into the Python backend, I created a fail-safe notification loop. Even if no one is in the control room, the maintenance team receives instant mobile alerts detailing the exact sensor value, location, and timestamp.
-- Multi-Tier Alarm & UI/UX Design: Implemented a 3-state alarm lifecycle on the dashboard: 'Normal' (Green) -> 'Unacknowledged Alarm' (Red Pulse + Audio Siren) -> 'Acknowledged' (Solid Amber). This prevents alarm fatigue while ensuring issues are actively managed.
-- Network Reliability (Watchdog Algorithm): Engineered a strict 15-second 'Watchdog' algorithm. If the API timestamp fails to update, the dashboard instantly forces a 'SYSTEM OFFLINE' visual pulse, preventing operators from trusting frozen data.`,
+    lessonsLearned: `- Control Center UX & Alarm Workflow: A monitoring screen alone was not enough. I redesigned the product around an operations workflow with KPI status, alarm banners, ACK actions, camera access, and rapid drill-down paths so users could move from detection to action without switching systems.
+- Incident Traceability Across Channels: Real operational value came from linking alarms with camera evidence, mobile access, and historical reports. This created a clearer incident timeline for engineering teams and improved cross-shift handover, follow-up, and accountability.
+- Reliability & Distributed Response: I engineered a strict watchdog and offline-detection flow so the team would not trust frozen data. Combined with mobile access and LINE alerts, the system evolved from a fixed utility dashboard into a distributed response platform for plant operations.`,
     compareImages: [
       {
         before: "/projects/dj-mes-smart-utility-dashboard/11.png",
         after: "/projects/dj-mes-smart-utility-dashboard/3.png",
-        label: "Monitoring Interface",
+        label: "Operations Visibility",
       },
       {
         before: "/projects/dj-mes-smart-utility-dashboard/9.png",
         after: "/projects/dj-mes-smart-utility-dashboard/2.png",
-        label: "Critical Alerting System",
+        label: "Alarm Response Workflow",
       },
       {
         before: "/projects/dj-mes-smart-utility-dashboard/10.png",
         after: "/projects/dj-mes-smart-utility-dashboard/12.png",
-        label: "Critical Alerting System",
+        label: "Incident Investigation",
       },
       {
         before: "/projects/dj-mes-smart-utility-dashboard/5.png",
         after: "/projects/dj-mes-smart-utility-dashboard/13.png",
-        label: "sensor inspection ",
+        label: "Field Access & Inspection",
       },
       {
         before: "/projects/dj-mes-smart-utility-dashboard/15.png",
         after: "/projects/dj-mes-smart-utility-dashboard/14.png",
-        label: "Data Management & historical traceability",
+        label: "Historical Traceability",
       },
     ],
     videoDemo:
       "/projects/dj-mes-smart-utility-dashboard/videos/senserAlarm.mp4",
 
     description:
-      "A centralized Next.js MES Dashboard featuring Digital Twin mapping, Historical Reports, and an Omnichannel Alarm System to protect critical injection molding cooling water and robotic air pressure.",
+      "Smart factory operations control center unifying real-time monitoring, camera investigation, historical reporting, mobile field access, and omnichannel alarms in one platform.",
 
     impact:
-      "Zero Cooling/Air-Related Downtime | 100% Alarm Response Tracking | Instant Mobile Notifications",
+      "Zero Utility-Related Downtime | Centralized Incident Response | Historical Traceability | Instant Mobile Notifications",
 
     content: `
-A comprehensive Smart Factory Utility Dashboard designed to act as the "Main Control Room" for plant operations at Dong Jin Electronics. Its primary mission is to protect highly sensitive injection molding machines from cooling failures and robotic arms from pneumatic air drops, bridging the gap between local SCADA systems and cloud-based mobile notifications.
+A comprehensive Smart Factory Operations Control Center built to serve as the digital command layer for plant operations at DongJin Electronics. While water level and air pressure remained core monitored utilities, the system expanded far beyond utility checking into a unified platform for live visibility, incident response, camera verification, historical reporting, and field collaboration.
 
-System Features:
-- Omnichannel Alert Workflow: Integrates on-screen visual pulsing, web-based audio sirens, and instant LINE Notify push notifications directly to the smartphones of the engineering team.
-- Acknowledge (ACK) Protocol: A strict tracking system allowing operators to click "ACK" to mute the siren and log that the issue is currently being resolved.
-- Intelligent Watchdog: Automatically detects PLC connection drops (15s timeout) and alerts operators immediately.
-- Digital Twin Topology: Interactive factory map with animated pipe flows and liquid gauges that react in real-time to sensor data.
+Project Scope:
+- Consolidated PLC-based plant signals, alarm states, and status KPIs into a central web dashboard for real-time operations visibility.
+- Extended the same operational view to mobile devices so engineers could review alarms, check plant status, and react from the factory floor.
+- Integrated camera workflows, snapshots, and recordings to support faster incident verification and post-event investigation.
+- Added reporting, settings management, and audit-friendly history so the platform could support daily operations, not just live monitoring.
+
+System Capabilities:
+- Operations Control Dashboard: Unified water, air, alarm, and plant-status monitoring into one control center with clear status cues and rapid response actions.
+- Omnichannel Incident Response: Combined on-screen alarm states, audio alerts, mobile access, and LINE messaging to ensure abnormal conditions reached the right people immediately.
+- Camera & Evidence Layer: Connected incidents with CCTV snapshots, recordings, and visual review workflows so teams could verify problems faster and investigate them later with context.
+- Reports & Traceability: Added historical reports, event history, and audit visibility to support shift review, engineering analysis, and operational accountability.
+- Reliability Safeguards: Implemented watchdog and offline-detection logic so operators are warned when live data stops updating and cannot mistakenly trust frozen screens.
 
 Business Impact:
-- Proactive Incident Management: The integration of LINE Notify shifted the factory's maintenance strategy from reactive to highly proactive. Engineers now respond to pressure drops minutes before they stall robotic arms, and monitor cooling pits before injection machines overheat, achieving zero utility-related machine halts since deployment.
-- Centralized Operations: Transformed raw machine data into an intelligent alerting hub, saving hundreds of manual patrol hours and eliminating silent pump and compressor failures.
+- Shifted operations from fragmented monitoring to one centralized command workflow for live plant visibility and faster decision-making.
+- Reduced dependence on manual patrols by giving engineering teams immediate alarm context, mobile access, and historical evidence in one system.
+- Strengthened traceability across detection, acknowledgment, investigation, and reporting, turning the platform into an active control center rather than a passive dashboard.
 `,
     architecture: [
       {
-        name: "Field Devices",
-        detail: "Level & Pressure Sensors",
+        name: "Plant Signals",
+        detail: "PLC + Sensors + CCTV",
         icon: "Cpu",
       },
       {
-        name: "Edge & Backend",
-        detail: "PLC -> Python API",
+        name: "Operations Backend",
+        detail: "Python API + Database",
         icon: "Settings",
       },
       {
-        name: "Control Room",
-        detail: "Next.js + Audio/Visual",
+        name: "Control Interfaces",
+        detail: "Web Control Room + Mobile",
         icon: "Monitor",
       },
       {
-        name: "Mobile Alerts",
-        detail: "LINE Notify API",
-        icon: "Smartphone",
+        name: "Incident Response",
+        detail: "Alerts + Reports + Audit Trail",
+        icon: "FileText",
       },
     ],
   },
 
   // =====================================================================
-  // PROJECT 4: 3D Factory Digital Twin
+  // PROJECT 4: peDashboard - Production Engineering & Maintenance Platform
+  // =====================================================================
+  {
+    slug: "pe-dashboard",
+    title: "peDashboard: Production Engineering & Maintenance Platform",
+    image:
+      "https://placehold.co/1920x1080/0f172a/f8fafc?text=peDashboard+Main",
+    tech: [
+      "Next.js",
+      "TypeScript",
+      "Prisma ORM",
+      "PostgreSQL",
+      "Tailwind CSS",
+      "AI Insights",
+      "Telegram Notifications",
+    ],
+    gallery: [
+      "https://placehold.co/1920x1080/0f172a/f8fafc?text=Machine+Dashboard",
+      "https://placehold.co/1920x1080/1e293b/f8fafc?text=Maintenance+Workflow",
+      "https://placehold.co/1920x1080/334155/f8fafc?text=Spare+Inventory",
+      "https://placehold.co/1920x1080/475569/f8fafc?text=AI+Analytics",
+    ],
+    role: "Full Stack Production Engineering Developer",
+    year: "2025 - 2026",
+    duration: "Ongoing",
+
+    problem:
+      "Factory maintenance operations were fragmented across spreadsheets, isolated forms, and manual follow-ups. Machine history, repair requests, preventive maintenance schedules, and spare-part usage were not connected in one workflow, making it difficult to prioritize risk, trace recurring failures, or give management a real-time view of plant reliability.",
+
+    solution:
+      "I built peDashboard, a full-stack maintenance intelligence platform that unifies machine asset management, repair request workflows, preventive maintenance, spare-parts inventory, and AI-assisted analytics in a single Next.js application. The system combines role-based access control, QR/PDF operational flows, Telegram notifications, and structured risk insights so technicians, leaders, and requesters can work from one source of truth.",
+
+    lessonsLearned: `- Workflow Coupling: Maintenance, machine history, and spare-part reservations cannot be designed as isolated modules. I linked these workflows so teams can trace each request from machine issue to repair action and part consumption without losing context.
+- Permission Design: Real factory users do not fit into a simple admin/user split. I implemented a finer-grained RBAC model so requesters, technicians, leaders, and managers each see the right actions without exposing the entire system.
+- AI Reliability: AI summaries are useful only when paired with deterministic fallbacks. I designed the analytics flow so dashboards can still return structured operational summaries even when the external AI provider is unavailable or misconfigured.`,
+
+    compareImages: [
+      {
+        before:
+          "https://placehold.co/800x600/64748b/ffffff?text=Before:+Scattered+Tracking",
+        after:
+          "https://placehold.co/800x600/0f172a/f8fafc?text=After:+Unified+Dashboard",
+        label: "Operational Visibility",
+      },
+      {
+        before:
+          "https://placehold.co/800x600/64748b/ffffff?text=Before:+Manual+Requests",
+        after:
+          "https://placehold.co/800x600/1e293b/f8fafc?text=After:+Digital+Workflow",
+        label: "Maintenance Workflow",
+      },
+      {
+        before:
+          "https://placehold.co/800x600/64748b/ffffff?text=Before:+Separate+Inventory",
+        after:
+          "https://placehold.co/800x600/334155/f8fafc?text=After:+Linked+Spare+Control",
+        label: "Inventory Traceability",
+      },
+      {
+        before:
+          "https://placehold.co/800x600/64748b/ffffff?text=Before:+Reactive+Review",
+        after:
+          "https://placehold.co/800x600/475569/f8fafc?text=After:+AI+Risk+Insights",
+        label: "Decision Support",
+      },
+    ],
+    videoDemo:
+      "https://placehold.co/1920x1080/0f172a/f8fafc?text=peDashboard+Demo",
+
+    description:
+      "Unified production engineering platform for machine reliability, maintenance workflows, spare inventory control, and AI-assisted operational insight.",
+    impact:
+      "Centralized Maintenance Workflows | Real-Time Asset Visibility | AI-Assisted Risk Prioritization | QR/PDF Operational Tracking",
+
+    content: `
+  peDashboard is a factory-focused production engineering platform designed to connect maintenance execution, machine history, and spare-parts control into one operational system.
+
+  Project Scope:
+  - Built a centralized web application for machine assets, maintenance requests, preventive maintenance, work orders, and spare inventory.
+  - Connected operational workflows with role-based permissions for requesters, technicians, leaders, and managers.
+  - Added analytics and AI-assisted summaries to help teams identify high-risk machines, overdue PM tasks, and inventory pressure earlier.
+
+  Key Features:
+  - Machine Management: Tracks machine master data, criticality, warranty, downtime history, and repair linkage.
+  - Maintenance Workflow: Handles request intake, approval flow, comments, attachments, and status progression.
+  - Preventive Maintenance: Supports PM scheduling, task execution, and overdue visibility.
+  - Spare Parts Control: Manages part master data, stock transactions, reservations, suppliers, and reorder logic.
+  - Digital Operations: Includes QR-based tracking, PDF document generation, import/export utilities, and audit-friendly records.
+  - AI & Alerts: Generates dashboard insights, predictive summaries, and notification flows for faster maintenance response.
+
+  Technical Highlights:
+  1. Frontend: Built with Next.js App Router, TypeScript, Tailwind CSS, and reusable UI components.
+  2. Backend: Uses Prisma and PostgreSQL for strongly structured operational data and workflow relationships.
+  3. Intelligence Layer: Implements risk scoring, structured AI summaries, and cached analytics endpoints.
+  4. Notification Layer: Integrates Telegram-based alerts for maintenance and operational events.
+
+  Business Value:
+  - Replaced fragmented maintenance tracking with a single source of truth.
+  - Improved traceability between machine failures, repair execution, and spare-part usage.
+  - Gave production engineering teams faster visibility into risk, backlog, and reliability priorities.
+  `,
+    architecture: [
+      { name: "Frontend", detail: "Next.js + TypeScript", icon: "Monitor" },
+      { name: "Backend", detail: "Prisma + PostgreSQL", icon: "Database" },
+      { name: "Operations", detail: "Maintenance + Spare + PM", icon: "Settings" },
+      { name: "Intelligence", detail: "AI Insights + Alerts", icon: "Cpu" },
+    ],
+  },
+
+   // PROJECT 5: AI Production Planning System
+  // =====================================================================
+  {
+    slug: "dongjin-planning-system",
+    title: "AI Production Planning System",
+    image:
+      "https://placehold.co/1920x1080/0b1220/f3f4f6?text=AI+Production+Planning+System",
+    tech: [
+      "Next.js",
+      "React",
+      "TypeScript",
+      "Excel Parsing (XLSX)",
+      "AI Planning Copilot",
+      "Zustand",
+      "Multi-language UI",
+    ],
+    gallery: [
+      "https://placehold.co/1920x1080/0b1220/f3f4f6?text=Upload+and+Auto+Mapping",
+      "https://placehold.co/1920x1080/122033/f3f4f6?text=Planning+Workspace",
+      "https://placehold.co/1920x1080/1c2d44/f3f4f6?text=Dashboard+Analytics",
+      "https://placehold.co/1920x1080/273a54/f3f4f6?text=Master+Data+Control",
+    ],
+    role: "Full Stack Planning Developer",
+    year: "2026",
+    duration: "Ongoing",
+
+    problem:
+      "Before this project, whenever a customer sent a new washing machine planning file, the planning team had to manually copy, paste, and reformat spreadsheet data into internal planning sheets before any real analysis could begin. Column positions were not always consistent, BOM references had to be cross-checked by hand, and matching customer demand with internal process planning consumed several hours per day. This manual workflow slowed decision-making, increased the risk of mapping mistakes, and made it difficult to respond quickly when planning priorities changed.",
+
+    solution:
+      "I built an AI-assisted production planning platform that allows planners to upload customer and internal Excel files directly, automatically detect key planning columns, parse daily production schedules, and connect the data with BOM and process master data in one interface. The system combines dashboard analytics, planning tables, master-data management, and AI-generated planning summaries so the team can move from raw demand files to actionable production plans in a few minutes instead of spending hours on manual spreadsheet preparation.",
+
+    lessonsLearned: `- Parser Robustness (Data Integration): Customer and internal planning files do not keep perfectly fixed column layouts. I designed the parser to scan for real header labels and column aliases so the system can keep working even when spreadsheet structures shift.
+- Planning Visibility (UX): A large planning table alone is not enough for fast decisions. I added dashboard summaries, BOM match coverage views, line/tool filters, and exception indicators so planners can detect mismatches and capacity risks much faster.
+- AI Decision Support (Operations): AI suggestions are only useful when planners can verify the reason behind them. I paired AI summaries with demand, capacity, and BOM evidence so the team can validate each exception before acting on it.`,
+
+    compareImages: [
+      {
+        before:
+          "https://placehold.co/800x600/6b7280/ffffff?text=Before:+Manual+Excel+Preparation",
+        after:
+          "https://placehold.co/800x600/0b1220/f3f4f6?text=After:+Upload+and+Auto+Mapping",
+        label: "Planning Workflow",
+      },
+      {
+        before:
+          "https://placehold.co/800x600/6b7280/ffffff?text=Before:+Manual+Column+Matching",
+        after:
+          "https://placehold.co/800x600/122033/f3f4f6?text=After:+Auto+Detected+Columns",
+        label: "Column Mapping",
+      },
+      {
+        before:
+          "https://placehold.co/800x600/6b7280/ffffff?text=Before:+Disconnected+Planning+Sheets",
+        after:
+          "https://placehold.co/800x600/1c2d44/f3f4f6?text=After:+Unified+Planning+View",
+        label: "Demand Visibility",
+      },
+      {
+        before:
+          "https://placehold.co/800x600/6b7280/ffffff?text=Before:+Scattered+Master+Data",
+        after:
+          "https://placehold.co/800x600/273a54/f3f4f6?text=After:+Centralized+Master+Data",
+        label: "Master Data Control",
+      },
+    ],
+    videoDemo:
+      "https://placehold.co/1920x1080/0b1220/f3f4f6?text=AI+Planning+Demo",
+
+    description:
+      "AI-assisted production planning platform that automates customer Excel intake, BOM/process mapping, and daily schedule management for appliance operations.",
+    impact:
+      "Planning Cycle Reduced from Hours to Minutes | AI Risk Summaries for Load and Material Issues | Unified Demand, Process, and BOM Visibility",
+
+    content: `
+  AI Production Planning System is a production planning workspace designed to turn incoming customer Excel files into actionable internal production plans without the usual manual spreadsheet preparation.
+
+  Project Scope:
+  - Built a centralized web application for uploading customer demand files, internal process plans, and BOM reference files.
+  - Automated the parsing of variable Excel structures into typed planning data for lines, models, tools, due dates, and daily quantities.
+  - Combined dashboard analytics, planning review, master-data maintenance, and AI-assisted exception handling into one responsive interface.
+
+  System Workflow:
+  1. Upload Layer: Planners upload customer demand files and internal planning files directly through the web interface.
+  2. Parsing Layer: The application auto-detects key headers, maps daily quantity columns, and normalizes spreadsheet data into structured planning records.
+  3. Planning Layer: Users filter by line, tool, color, and status to review schedule quantities, demand IDs, and process matching in one place.
+  4. Master Data Layer: BOM mappings, capacities, inventory data, and working calendars are maintained directly in the application.
+  5. Decision Layer: The AI planning copilot summarizes overload risks, BOM gaps, unmapped demand, and recommended next actions for faster daily planning decisions.
+
+  Key Features:
+  - Auto Column Detection: Identifies relevant fields from changing customer Excel layouts without requiring repetitive manual remapping.
+  - Daily Schedule Parsing: Converts date-based spreadsheet columns into structured daily production quantities for analysis and review.
+  - BOM and Process Linking: Connects customer model demand with internal part mapping and process planning logic across Top, Outer, Plan LID, and Vibration stages.
+  - AI Planning Copilot: Generates planning summaries, shortage warnings, capacity imbalance alerts, and recommended next checks for planners.
+  - Master Data Management: Supports maintenance of part mappings, capacities, inventory, and working calendars in one system.
+  - Multi-Language Access: Provides a localized interface for English, Korean, and Thai users.
+  - Persistent Planning Workspace: Keeps uploaded data and planning state available for continued review across sessions.
+
+  Business Impact:
+  - Reduced the planning team's daily preparation work from several hours to just a few minutes.
+  - Lowered the risk of spreadsheet copy/paste errors during demand-to-plan translation.
+  - Improved visibility between customer demand, internal process planning, and BOM readiness in one operational screen.
+  - Added earlier warning signals for overload, shortage, and mapping exceptions before daily planning meetings.
+  `,
+    architecture: [
+      { name: "Input", detail: "Customer/Internal Excel Upload", icon: "FileText" },
+      { name: "Parsing", detail: "Smart Header Mapping + XLSX", icon: "Cpu" },
+      { name: "Planning", detail: "Dashboard + AI Planning Copilot", icon: "Monitor" },
+      { name: "Control", detail: "BOM + Capacity + Calendar", icon: "Settings" },
+    ],
+  },
+
+  // =====================================================================
+  // PROJECT 6: 3D Factory Digital Twin
   // =====================================================================
   {
     slug: "3d-factory-simulation",
@@ -311,13 +556,14 @@ Business Impact:
     duration: "2 Months",
 
     problem:
-      "Machine relocation projects often faced delays due to physical clashes (e.g., machine hitting a pillar) that weren't visible in 2D CAD drawings. This resulted in on-site modifications and extended production downtime.",
+      "Machine relocation and new line installation projects frequently suffered costly delays due to physical clashes—machines colliding with structural pillars, overhead cable trays, or utility piping—that were invisible in traditional 2D AutoCAD drawings. Planning relied on paper floor plans and manual tape measurements, making it nearly impossible to verify vertical clearances, forklift turning radii, or maintenance access corridors. Each on-site clash discovery forced unplanned rework, extending production downtime by an average of 3 days per relocation project.",
 
     solution:
-      "Created a 1:1 Scale 3D Digital Twin of the entire factory floor. This allowed the team to 'Virtually Move' machines, check vertical clearances, simulate forklift paths, and optimize layout before the actual move day.",
+      "Built a 1:1 Scale 3D Digital Twin of the entire factory floor using SketchUp and AutoCAD, covering over 5,000 square meters across multiple production zones. The model includes structural elements (columns, beams, mezzanines), utility infrastructure (cable trays, piping, HVAC ducts), and accurate machine footprints with height envelopes. This enabled the cross-functional team to 'Virtually Relocate' machines, simulate forklift logistics paths, verify overhead clearances, and validate maintenance access before any physical work began. Rendered fly-through videos were presented to executives for rapid layout approval.",
 
-    lessonsLearned: `• Model Heavy Performance: Initial 3D models contained too many polygons (every nut and bolt), causing simulation software to crash. I learned to apply LOD (Level of Detail) optimization—keeping highly detailed meshes only for collision boundaries to ensure smooth 60FPS walkthroughs.
-• Stakeholder Communication: Realized that executives prefer visual walkthrough videos over technical CAD files. Rendered animated fly-throughs which reduced layout approval time from weeks to just hours.`,
+    lessonsLearned: `- Heavy Model Performance: The initial 3D models had too many polygons (including every nut and bolt), which caused the simulation software to crash. I learned to apply LOD (Level of Detail) optimization—keeping high-detail meshes only where needed for collision boundaries while using simplified geometry elsewhere—to maintain smooth 60 FPS walkthroughs.
+- Stakeholder Communication: I found that executives preferred visual walkthrough videos over technical CAD files. By rendering animated fly-throughs with annotations, I reduced layout approval time from several weeks to just a few hours.
+- Measurement Accuracy: Discovered a 50 mm discrepancy between legacy 2D drawings and actual site conditions during ground-truth surveys. This reinforced the importance of physical site verification before modeling and led me to establish a mandatory survey-first protocol for all future projects.`,
 
     compareImages: [
       {
@@ -354,25 +600,44 @@ Business Impact:
     videoDemo: "/projects/factory/videos/3df.mp4",
 
     description:
-      "Virtual 3D simulation of the factory floor used for precise layout planning and validation.",
-    impact: "Zero Layout Errors | Setup time reduced by 3 days",
+      "High-fidelity 1:1 scale 3D Digital Twin covering 5,000+ sqm of factory floor, enabling clash-free machine relocation and cutting setup time by 3 days per project.",
+    impact:
+      "Zero Layout Clashes | Setup Time Reduced 3 Days | Approval Time Cut from Weeks to Hours",
 
-    content: `Bridging the gap between design and reality with High-Fidelity 3D Simulation.
+    content: `Bridging the gap between design and reality with a High-Fidelity 3D Digital Twin, covering the full factory floor at a 1:1 scale to eliminate costly relocation errors.
+
+Project Scope:
+- Modeled 5,000+ sqm of factory floor across multiple production zones.
+- Included structural elements (columns, beams, mezzanines), utility infrastructure (cable trays, piping, HVAC ducts), and machine footprints with accurate height envelopes.
+- Total of 6 major machine relocation projects validated through the Digital Twin before physical execution.
 
 [ Workflow ]
-1. Site Survey: Measured actual dimensions of building columns, cable trays, and piping.
-2. Modeling: Converted 2D layouts into 3D models.
-3. Validation: Simulated machine placement for collision detection and maintenance access.`,
+1. Site Survey: Conducted ground-truth measurements of building columns, cable trays, piping, and floor elevations using laser distance meters. Identified 50 mm discrepancies from legacy 2D drawings.
+2. 3D Modeling: Converted verified dimensions and 2D AutoCAD layouts into detailed SketchUp 3D models with LOD (Level of Detail) optimization for performance.
+3. Virtual Validation: Simulated machine placement to detect collisions, verified forklift turning radii and logistics paths, and checked overhead clearance for cranes and HVAC.
+4. Stakeholder Review: Rendered animated fly-through walkthrough videos for executive presentations, replacing static CAD file reviews.
+5. Execution: Provided construction teams with validated 3D reference models, ensuring zero surprises on move day.
+
+Key Features:
+- Collision Detection: Automatically identifies physical clashes between machines and structural elements before any equipment is moved.
+- Clearance Verification: Validates vertical clearance for overhead cranes, cable trays, and HVAC ducts against machine height envelopes.
+- Logistics Path Simulation: Tests forklift routes, AGV paths, and material flow corridors within the 3D environment.
+- Maintenance Access Audit: Ensures adequate space around each machine for routine maintenance, part replacement, and safety egress.
+
+Business Impact:
+- Eliminated all layout-related rework across 6 relocation projects, saving an estimated 18 days of cumulative downtime.
+- Cut executive layout approval time from 2-3 weeks to under 4 hours through visual fly-through presentations.
+- Established a reusable Digital Twin asset that serves as the single source of truth for all future factory expansion and layout planning.`,
     architecture: [
-      { name: "Survey", detail: "Measure Site", icon: "PenTool" },
-      { name: "Modeling", detail: "SketchUp 3D", icon: "Box" },
-      { name: "Simulation", detail: "Move & Validate", icon: "Play" },
-      { name: "Construction", detail: "Actual Setup", icon: "Hammer" },
+      { name: "Survey", detail: "Laser Measurement", icon: "PenTool" },
+      { name: "Modeling", detail: "SketchUp + AutoCAD", icon: "Box" },
+      { name: "Simulation", detail: "Clash & Path Check", icon: "Play" },
+      { name: "Execution", detail: "Validated Build", icon: "Hammer" },
     ],
   },
 
   // =====================================================================
-  // PROJECT 5: Cart Part Design & Engineering Development
+  // PROJECT 6: Cart Part Design & Engineering Development
   // =====================================================================
   {
     slug: "cart-part-design",
@@ -438,7 +703,7 @@ Business Impact:
         label: "Efficiency",
       },
     ],
-    videoDemo: null,
+    videoDemo: "/projects/3DCart/videos/cart3d.mp4",
 
     description:
       "End-to-end engineering development of a customized cart system, optimizing durability, safety, and workflow efficiency.",
