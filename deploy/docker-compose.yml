@@ -1,0 +1,11 @@
+services:
+  app:
+    image: smart-factory-portfolio:latest
+    container_name: smart-factory-portfolio
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.local
+    volumes:
+      - ./storage:/app/storage
+    restart: unless-stopped
