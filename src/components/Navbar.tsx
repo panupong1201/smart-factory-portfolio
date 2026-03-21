@@ -55,7 +55,7 @@ export default function Navbar() {
         {/* DESKTOP MENU: เรียงใหม่ให้ตรงกับหน้าเว็บ */}
         <div className="hidden md:flex gap-1 items-center bg-white/5 px-2 py-1 rounded-full border border-white/10 backdrop-blur-md">
           {/* navigation items translated */}
-          {['about', 'skills', 'timeline', 'projects', 'certificates', 'contact'].map((key) => (
+          {['about', 'skills', 'toolkit', 'timeline', 'projects', 'certificates', 'contact'].map((key) => (
             <a
               key={key}
               href={`#${key}`}

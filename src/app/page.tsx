@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import About from "@/components/About";       // ย้ายมาต่อจาก Hero เพื่อแนะนำตัวก่อน
 import Skills from "@/components/Skills";     // โชว์สกิลต่อจาก About
+import Toolkit from "@/components/Toolkit";   // เครื่องมือและเทคโนโลยี
 import Timeline from "@/components/Timeline"; // เล่าเส้นทางอาชีพ
 import Projects from "@/components/Projects"; // โชว์ผลงาน (Highlights)
 import Certificates from "@/components/Certificates"; // โชว์ใบเซอร์ปิดท้ายความน่าเชื่อถือ
@@ -17,6 +18,7 @@ export default function Home() {
       {/* ส่วนแนะนำตัวตน */}
       <About />
       <Skills />
+      <Toolkit />
       
       {/* ส่วนเส้นทางและผลงาน */}
       <Timeline />

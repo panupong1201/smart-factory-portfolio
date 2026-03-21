@@ -3,6 +3,7 @@
   "nav": {
     "about": "About",
     "skills": "Skills",
+    "toolkit": "Toolkit",
     "timeline": "Timeline",
     "projects": "Projects",
     "certificates": "Certificates",
@@ -210,6 +211,14 @@
     "optimizationProjects": "Annual optimization projects",
     "pmSystem": "PM System Planning",
     "preventiveMaintenance": "Preventive Maintenance Standards"
+  },
+  "toolkit": {
+    "badge": "Tech Ecosystem",
+    "title": "Tools & Technologies",
+    "subtitle": "Hardware, software, and design tools I use across real industrial projects — from PLCs and IoT gateways to modern web frameworks.",
+    "viewFull": "View Full Toolkit",
+    "pageTitle": "Complete Toolkit",
+    "pageSubtitle": "Every tool, framework, and device I have hands-on experience with — organized by category with proficiency levels and project cross-references."
   },
   "projectDetail": {
     "backToProjects": "Back to Projects",
