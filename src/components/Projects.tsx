@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowUpRight, Monitor } from "lucide-react";
+import { ArrowUpRight, Monitor, Play } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { projects } from "@/data/projects";
@@ -75,97 +75,133 @@ export default function Projects() {
           </div>
         </div>
 
-        {/* Projects Grid */}
+        {/* Projects Grid — first project spans 2 cols on lg */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map((project, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
-              <Link href={`/${lang}/projects/${project.slug}`} className="block h-full group">
-                <motion.div 
-                    whileHover={{ y: -10 }} // 🚀 Effect 1: ลอยขึ้นเมื่อ Hover
-                    transition={{ type: "spring", stiffness: 300 }}
-                    className="relative h-full bg-gray-900/40 backdrop-blur-xl border border-gray-800 rounded-2xl overflow-hidden flex flex-col hover:border-blue-500/50 hover:shadow-[0_0_30px_rgba(59,130,246,0.15)] transition-all duration-300"
-                >
-                  
-                  {/* 1. Image Thumbnail with Zoom Effect */}
-                  <div className="relative w-full h-56 overflow-hidden bg-gray-800">
-                    <div className="absolute inset-0 bg-linear-to-t from-gray-900 via-transparent to-transparent z-10 opacity-60" />
+          {projects.map((project, index) => {
+            const isFeatured = index === 0;
+            const hasVideo = project.videoDemo && /\.(mp4|webm|ogg)(\?.*)?$/i.test(project.videoDemo);
+
+            return (
+              <motion.div
+                key={project.slug}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.5, delay: index * 0.08 }}
+                className={isFeatured ? "md:col-span-2 lg:col-span-2" : ""}
+              >
+                <Link href={`/${lang}/projects/${project.slug}`} className="block h-full group">
+                  <motion.div 
+                      whileHover={{ y: -8 }}
+                      transition={{ type: "spring", stiffness: 300, damping: 24 }}
+                      className={`relative h-full bg-gray-900/40 backdrop-blur-xl border rounded-2xl overflow-hidden flex flex-col transition-all duration-500 ${
+                        isFeatured
+                          ? "border-blue-500/30 hover:border-blue-400/60 hover:shadow-[0_0_60px_rgba(59,130,246,0.2)]"
+                          : "border-gray-800 hover:border-blue-500/40 hover:shadow-[0_0_30px_rgba(59,130,246,0.12)]"
+                      }`}
+                  >
+                    {/* Animated gradient border glow on hover */}
+                    <div className="absolute -inset-px bg-linear-to-br from-blue-500/0 via-purple-500/0 to-cyan-500/0 group-hover:from-blue-500/20 group-hover:via-purple-500/10 group-hover:to-cyan-500/20 rounded-2xl transition-all duration-700 -z-10 blur-sm" />
                     
-                    {/* 🚀 Effect 2: รูปภาพซูมเข้าช้าๆ */}
-                    <div className="relative w-full h-full group-hover:scale-110 transition-transform duration-700 ease-out">
-                      <Image
-                        src={project.image}
-                        alt={project.title}
-                        fill
-                        loading={index < 3 ? "eager" : "lazy"}
-                        unoptimized
-                        className="object-cover opacity-90 group-hover:opacity-100 transition-opacity"
-                        onError={(e) => {
-                          e.currentTarget.style.display = "none";
-                        }}
-                      />
-                      {/* Color Overlay */}
-                      <div className="absolute inset-0 bg-linear-to-br from-blue-500/20 to-purple-500/20 mix-blend-overlay opacity-40 group-hover:opacity-20 transition-opacity" />
-                    </div>
+                    {/* 1. Image Thumbnail */}
+                    <div className={`relative w-full overflow-hidden bg-gray-800 ${isFeatured ? "h-64 md:h-80" : "h-56"}`}>
+                      <div className="absolute inset-0 bg-linear-to-t from-gray-900 via-transparent to-transparent z-10 opacity-60" />
+                      
+                      <div className="relative w-full h-full group-hover:scale-110 transition-transform duration-700 ease-out">
+                        <Image
+                          src={project.image}
+                          alt={project.title}
+                          fill
+                          loading={index < 3 ? "eager" : "lazy"}
+                          unoptimized
+                          className="object-cover opacity-90 group-hover:opacity-100 transition-opacity"
+                          onError={(e) => { e.currentTarget.style.display = "none"; }}
+                        />
+                        <div className="absolute inset-0 bg-linear-to-br from-blue-500/20 to-purple-500/20 mix-blend-overlay opacity-40 group-hover:opacity-10 transition-opacity" />
+                      </div>
 
-                    {/* Category Badge */}
-                    <div className="absolute top-4 right-4 z-20">
-                        <span className="bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-mono text-white border border-white/10 shadow-lg">
-                        {project.tech ? project.tech[0] : t("projects.projectFallback")}
+                      {/* Project Number */}
+                      <div className="absolute top-4 left-4 z-20">
+                        <span className="text-white/20 font-mono text-4xl font-black leading-none select-none group-hover:text-white/30 transition-colors">
+                          {String(index + 1).padStart(2, "0")}
                         </span>
-                    </div>
-                  </div>
+                      </div>
 
-                  {/* 2. Content Section */}
-                  <div className="p-6 flex flex-col grow relative">
-                    
-                    <div className="flex justify-between items-start mb-3">
-                        <h3 className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors line-clamp-1">
-                          <GlowHeading tone="cyan">{t(`projects.${project.slug}.title`)}</GlowHeading>
-                        </h3>
-                        {/* 🚀 Effect 3: ลูกศรพุ่งเฉียง */}
-                        <ArrowUpRight className="w-5 h-5 text-gray-500 group-hover:text-blue-400 group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform duration-300" />
-                    </div>
-
-                    <p className="text-gray-400 text-sm leading-relaxed mb-6 line-clamp-2 grow font-light">
-                      {t(`projects.${project.slug}.description`)}
-                    </p>
-
-                    {/* Tech Stack Tags */}
-                    <div className="flex flex-wrap gap-2 mb-6">
-                      {project.tech?.slice(0, 3).map((t) => (
-                        <span
-                          key={t}
-                          className="text-[10px] font-mono text-gray-400 bg-white/5 px-2 py-1 rounded border border-white/5 group-hover:border-blue-500/30 group-hover:text-blue-300 transition-colors"
-                        >
-                          {t}
+                      {/* Year + Category Badge */}
+                      <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
+                        <span className="bg-blue-600/80 backdrop-blur-md px-2.5 py-0.5 rounded-full text-[10px] font-mono text-white border border-blue-400/30 shadow-lg">
+                          {project.year}
                         </span>
-                      ))}
-                      {project.tech && project.tech.length > 3 && (
-                          <span className="text-[10px] font-mono text-gray-500 px-1 py-1">+</span>
+                        <span className="bg-black/60 backdrop-blur-md px-3 py-0.5 rounded-full text-[10px] font-mono text-white border border-white/10 shadow-lg">
+                          {project.tech ? project.tech[0] : t("projects.projectFallback")}
+                        </span>
+                      </div>
+
+                      {/* Video indicator */}
+                      {hasVideo && (
+                        <div className="absolute bottom-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <div className="flex items-center gap-1.5 bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
+                            <Play className="w-3 h-3 text-red-400 fill-red-400" />
+                            <span className="text-white text-[10px] font-mono">DEMO</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Featured badge */}
+                      {isFeatured && (
+                        <div className="absolute bottom-4 left-4 z-20">
+                          <span className="bg-linear-to-r from-blue-600 to-purple-600 text-white text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full shadow-[0_0_20px_rgba(99,102,241,0.4)]">
+                            ★ Featured
+                          </span>
+                        </div>
                       )}
                     </div>
 
-                    {/* Footer Metrics */}
-                    <div className="pt-4 border-t border-white/5 flex items-center gap-3 mt-auto">
-                        <div className="flex h-2 w-2 relative">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                        </div>
-                        <p className="text-xs font-bold text-gray-300 group-hover:text-white transition-colors truncate">
-                          {t(`projects.${project.slug}.impact`)}
-                        </p>
+                    {/* 2. Content Section */}
+                    <div className="p-6 flex flex-col grow relative">
+                      
+                      <div className="flex justify-between items-start mb-3">
+                          <h3 className={`font-bold text-white group-hover:text-blue-400 transition-colors line-clamp-1 ${isFeatured ? "text-2xl" : "text-xl"}`}>
+                            <GlowHeading tone="cyan">{t(`projects.${project.slug}.title`)}</GlowHeading>
+                          </h3>
+                          <ArrowUpRight className="w-5 h-5 text-gray-500 group-hover:text-blue-400 group-hover:-translate-y-1 group-hover:translate-x-1 transition-all duration-300 shrink-0 ml-2" />
+                      </div>
+
+                      <p className={`text-gray-400 text-sm leading-relaxed mb-6 grow font-light ${isFeatured ? "line-clamp-3" : "line-clamp-2"}`}>
+                        {t(`projects.${project.slug}.description`)}
+                      </p>
+
+                      {/* Tech Stack Tags */}
+                      <div className="flex flex-wrap gap-2 mb-6">
+                        {project.tech?.slice(0, isFeatured ? 5 : 3).map((techItem) => (
+                          <span
+                            key={techItem}
+                            className="text-[10px] font-mono text-gray-400 bg-white/5 px-2.5 py-1 rounded-md border border-white/5 group-hover:border-blue-500/30 group-hover:text-blue-300 transition-colors"
+                          >
+                            {techItem}
+                          </span>
+                        ))}
+                        {project.tech && project.tech.length > (isFeatured ? 5 : 3) && (
+                            <span className="text-[10px] font-mono text-gray-500 px-1 py-1">+{project.tech.length - (isFeatured ? 5 : 3)}</span>
+                        )}
+                      </div>
+
+                      {/* Footer Metrics */}
+                      <div className="pt-4 border-t border-white/5 flex items-center gap-3 mt-auto">
+                          <div className="flex h-2 w-2 relative shrink-0">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                          </div>
+                          <p className="text-xs font-bold text-gray-300 group-hover:text-white transition-colors truncate">
+                            {t(`projects.${project.slug}.impact`)}
+                          </p>
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
-              </Link>
-            </motion.div>
-          ))}
+                  </motion.div>
+                </Link>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>

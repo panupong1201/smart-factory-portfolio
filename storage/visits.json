@@ -39,6 +39,11 @@
       "visitorId": "fef92811ef1c1b2b2c78ac5f0438a4dca1c98c0e867d15b97674d7b29d64b435",
       "timestamp": "2026-03-16T09:19:39.985Z",
       "version": "v1"
+    },
+    {
+      "visitorId": "a12bfc1f184d7e4c7e5be3d0d308a93644d8270d24e4ddcf6be763143408948c",
+      "timestamp": "2026-03-21T11:00:38.209Z",
+      "version": "v1"
     }
   ],
   "logs": [
@@ -125,6 +130,17 @@
       "version": "v1",
       "ip": "192.168.2.191",
       "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+      "language": "th,en-US;q=0.9,en;q=0.8",
+      "country": "unknown",
+      "region": "unknown",
+      "city": "unknown"
+    },
+    {
+      "visitorId": "a12bfc1f184d7e4c7e5be3d0d308a93644d8270d24e4ddcf6be763143408948c",
+      "timestamp": "2026-03-21T11:00:38.209Z",
+      "version": "v1",
+      "ip": "::1",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
       "language": "th,en-US;q=0.9,en;q=0.8",
       "country": "unknown",
       "region": "unknown",

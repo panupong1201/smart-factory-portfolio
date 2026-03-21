@@ -183,7 +183,7 @@ export default function Hero() {
             {/* ⚠️ GLITCH IMAGE LAYER ⚠️ */}
             <div className="absolute inset-0 z-0">
               <Image
-                src="/profile/profile2.png" // ใส่รูปจริงของคุณที่นี่
+                src="/profile/tony.png" // ใส่รูปจริงของคุณที่นี่
                 alt="Ton"
                 fill
                 className="object-cover opacity-90 group-hover:scale-110 transition-transform duration-700"

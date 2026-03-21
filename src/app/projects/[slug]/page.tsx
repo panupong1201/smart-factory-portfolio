@@ -5,6 +5,7 @@ import { projects } from "@/data/projects";
 import { notFound, useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { motion, useScroll, useSpring } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
 import { useLanguage } from "@/components/LanguageProvider";
 import {
@@ -17,7 +18,7 @@ import {
   CheckCircle,
   AlertCircle,
   Mail,
-  Lightbulb // ✅ นำเข้าไอคอนใหม่
+  Lightbulb
 } from "lucide-react";
 
 import CompareGallery from "@/components/project/CompareGallery";
@@ -77,6 +78,10 @@ export default function ProjectPage() {
   const projectIndex = projects.findIndex((p) => p.slug === slug);
   const project = projects[projectIndex];
 
+  // Scroll progress
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
+
   if (!project) {
     notFound();
     return null;
@@ -90,6 +95,11 @@ export default function ProjectPage() {
 
   return (
     <PageTransition>
+      {/* Scroll Progress Bar */}
+      <motion.div
+        style={{ scaleX, transformOrigin: "left" }}
+        className="fixed top-0 left-0 right-0 h-0.75 bg-linear-to-r from-blue-500 via-purple-500 to-cyan-500 z-9999"
+      />
       <main className="bg-[#050505] text-white min-h-screen pb-24">
         {/* 1. Hero Section */}
         <div className="relative h-[60vh] w-full">
@@ -132,25 +142,43 @@ export default function ProjectPage() {
         <div className="max-w-5xl mx-auto px-6 relative z-10 -mt-10">
           
           {/* 2. Project Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-gray-900/80 backdrop-blur-xl border border-white/10 p-6 rounded-2xl shadow-xl mb-16">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-gray-900/80 backdrop-blur-xl border border-white/10 p-6 rounded-2xl shadow-xl mb-16"
+          >
             {[
               { icon: User, label: t("projectDetail.role"), val: t(`projects.${project.slug}.role`) },
               { icon: Calendar, label: t("projectDetail.year"), val: project.year },
               { icon: Clock, label: t("projectDetail.duration"), val: t(`projects.${project.slug}.duration`) },
               { icon: Layers, label: t("projectDetail.type"), val: t("projectDetail.industrialAutomation") },
             ].map((stat, i) => (
-              <div key={i}>
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.4 }}
+              >
                 <div className="flex items-center gap-2 text-gray-400 text-xs font-mono uppercase mb-1">
                   <stat.icon className="w-4 h-4" /> {stat.label}
                 </div>
                 <p className="font-semibold text-white">{stat.val}</p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
 
           {/* 3. Challenge vs Solution */}
           <div className="grid md:grid-cols-2 gap-8 mb-20">
-            <div className="bg-red-900/5 border border-red-500/10 p-8 rounded-2xl relative overflow-hidden group">
+            <motion.div
+              initial={{ opacity: 0, x: -40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="bg-red-900/5 border border-red-500/10 p-8 rounded-2xl relative overflow-hidden group hover:border-red-500/30 transition-colors"
+            >
               <div className="flex items-center gap-3 mb-4 relative z-10">
                 <div className="p-2 bg-red-500/20 rounded-lg text-red-400">
                   <AlertCircle className="w-6 h-6" />
@@ -162,8 +190,14 @@ export default function ProjectPage() {
               <p className="text-gray-300 leading-relaxed text-lg relative z-10">
                 {t(`projects.${project.slug}.problem`)}
               </p>
-            </div>
-            <div className="bg-blue-900/5 border border-blue-500/10 p-8 rounded-2xl relative overflow-hidden group">
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.15 }}
+              className="bg-blue-900/5 border border-blue-500/10 p-8 rounded-2xl relative overflow-hidden group hover:border-blue-500/30 transition-colors"
+            >
               <div className="flex items-center gap-3 mb-4 relative z-10">
                 <div className="p-2 bg-blue-500/20 rounded-lg text-blue-400">
                   <CheckCircle className="w-6 h-6" />
@@ -175,7 +209,7 @@ export default function ProjectPage() {
               <p className="text-gray-300 leading-relaxed text-lg relative z-10">
                 {t(`projects.${project.slug}.solution`)}
               </p>
-            </div>
+            </motion.div>
           </div>
 
           {/* 4. Transformation Evidence */}
@@ -258,7 +292,13 @@ export default function ProjectPage() {
           )}
 
           {/* 8. Business Impact */}
-          <div className="mb-20 text-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="mb-20 text-center"
+          >
             <h3 className="text-2xl font-bold text-white mb-8">
               <GlowHeading tone="green">{t("projectDetail.businessImpact")}</GlowHeading>
             </h3>
@@ -270,7 +310,7 @@ export default function ProjectPage() {
                 </span>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* 9. Detailed Content & Tech */}
           <div className="grid md:grid-cols-3 gap-12 mb-20">
