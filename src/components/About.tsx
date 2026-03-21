@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { User, Award, Cpu, Zap, Activity, Terminal } from "lucide-react";
+import { User, Award, Cpu, Zap, Activity, Terminal, BrainCircuit } from "lucide-react";
 import { useLanguage } from "./LanguageProvider";
 
 export default function About() {
@@ -90,9 +90,23 @@ export default function About() {
                     {t("about.todayBuild")}
                 </p>
                 <p>
+                    {t("about.aiParagraph")}
+                </p>
+                <p>
                     <strong className="text-white">{t("about.mission")}</strong>
                 </p>
             </div>
+
+            {/* AI Translator Badge */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="mt-6 inline-flex items-center gap-2 px-4 py-2 bg-cyan-950/30 border border-cyan-500/20 rounded-full"
+            >
+              <BrainCircuit className="w-4 h-4 text-cyan-400" />
+              <span className="text-cyan-300 text-xs font-mono tracking-wider">{t("about.aiTranslatorBadge")}</span>
+            </motion.div>
 
             {/* Signature / Quote */}
             <div className="mt-10 pt-8 border-t border-white/5">

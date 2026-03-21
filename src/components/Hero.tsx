@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { ArrowRight, Cpu, Wifi } from "lucide-react";
+import { ArrowRight, Cpu, Wifi, BrainCircuit } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
 import { useLanguage } from "./LanguageProvider";
@@ -135,6 +135,14 @@ export default function Hero() {
                 <HackerText text={t("hero.headingMain")} />
               </span>
             </h1>
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8, duration: 0.8 }}
+              className="text-cyan-400/80 text-sm md:text-base font-mono tracking-wide mt-3"
+            >
+              {t("hero.subtitle")}
+            </motion.p>
           </div>
 
           <motion.p
@@ -161,6 +169,15 @@ export default function Hero() {
               <span className="flex items-center gap-2 relative z-10">
                 {t("buttons.exploreSystem")}{" "}
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </span>
+            </a>
+            <a
+              href="/toolkit#ai-showcase"
+              className="group px-8 py-4 border border-cyan-500/40 text-cyan-300 rounded-full font-bold transition-all hover:scale-105 hover:bg-cyan-500/10 hover:shadow-[0_0_30px_rgba(6,182,212,0.3)]"
+            >
+              <span className="flex items-center gap-2">
+                <BrainCircuit className="w-5 h-5" />
+                {t("buttons.seeAI")}
               </span>
             </a>
           </motion.div>
