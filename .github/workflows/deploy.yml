@@ -19,4 +19,9 @@ jobs:
           port: ${{ secrets.PORT }}
           script_stop: true
           script: |
-            powershell -Command "Set-Location 'C:\Users\Administrator\Desktop\deploy-node\package'; git pull origin main; npm install; pm2 reload smart-factory-portfolio"
+            cd 'C:\Users\Administrator\Desktop\deploy-node\package'
+            git fetch --all
+            git reset --hard origin/main
+            git clean -fd
+            npm install
+            pm2 reload smart-factory-portfolio || pm2 start npm --name 'smart-factory-portfolio' -- start
