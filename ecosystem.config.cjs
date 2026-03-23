@@ -1,8 +1,10 @@
+const path = require('path');
+
 module.exports = {
   apps: [
     {
       name: 'smart-factory-portfolio',
-      script: '.next/standalone/server.js',
+      script: path.join(__dirname, '.next', 'standalone', 'server.js'),
       cwd: __dirname,
       instances: 1,
       exec_mode: 'fork',
