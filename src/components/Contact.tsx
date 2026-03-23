@@ -99,20 +99,10 @@ export default function Contact() {
         setSelectedFiles((prev) => prev.filter((_, index) => index !== indexToRemove));
     }
 
-    async function fileToBase64(file: File) {
-        return await new Promise<string>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(String(reader.result || ""));
-            reader.onerror = () => reject(new Error("Failed to read file"));
-            reader.readAsDataURL(file);
-        });
-    }
-
-    async function postContactWithProgress(payload: unknown) {
+    async function postContactWithProgress(payload: FormData) {
         return await new Promise<{ ok: boolean; result: unknown }>((resolve, reject) => {
             const xhr = new XMLHttpRequest();
             xhr.open("POST", "/api/contact");
-            xhr.setRequestHeader("Content-Type", "application/json");
 
             xhr.upload.onprogress = (event) => {
                 if (!event.lengthComputable) return;
@@ -135,7 +125,7 @@ export default function Contact() {
             };
 
             xhr.onerror = () => reject(new Error("Network error"));
-            xhr.send(JSON.stringify(payload));
+            xhr.send(payload);
         });
     }
 
@@ -162,20 +152,17 @@ export default function Contact() {
         setIsSubmitting(true);
         setUploadProgress(0);
         try {
-            const attachments = await Promise.all(
-                selectedFiles.map(async (file) => {
-                    const base64 = await fileToBase64(file);
-                    const data = base64.includes(",") ? base64.split(",")[1] : "";
-                    return {
-                        name: file.name,
-                        type: file.type || "application/octet-stream",
-                        size: file.size,
-                        data,
-                    };
-                })
-            );
+            const payload = new FormData();
+            payload.append("name", form.name.trim());
+            payload.append("email", form.email.trim());
+            payload.append("subject", form.subject.trim());
+            payload.append("message", form.message.trim());
 
-            const { ok, result } = await postContactWithProgress({ ...form, attachments });
+            selectedFiles.forEach((file) => {
+                payload.append("attachments", file, file.name);
+            });
+
+            const { ok, result } = await postContactWithProgress(payload);
             if (!ok) {
                 const errorResult = result as { message?: string } | null;
                 setSubmitState({

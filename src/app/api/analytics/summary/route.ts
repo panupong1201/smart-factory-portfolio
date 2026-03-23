@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getVisitSummary } from "@/lib/visitorStore";
 
+export const runtime = "nodejs";
+
 export async function GET() {
   try {
     const summary = await getVisitSummary();

@@ -20,7 +20,10 @@ export default function VisitLogger() {
           headers: {
             "content-type": "application/json",
           },
-          body: JSON.stringify({ version: APP_VERSION }),
+          body: JSON.stringify({
+            version: APP_VERSION,
+            path: window.location.pathname,
+          }),
           cache: "no-store",
         });
         window.sessionStorage.setItem(SESSION_KEY, "1");

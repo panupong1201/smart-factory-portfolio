@@ -10,6 +10,22 @@ import GlowHeading from "@/components/ui/GlowHeading";
 
 export default function Projects() {
   const { t, lang } = useLanguage();
+
+  const getProjectText = (
+    project: (typeof projects)[number],
+    field: string,
+  ) => {
+    const key = `projects.${project.slug}.${field}`;
+    const translated = t(key);
+    const fallback = project[field as keyof typeof project];
+
+    if (translated !== key && translated.trim() !== "") {
+      return translated;
+    }
+
+    return typeof fallback === "string" ? fallback : key;
+  };
+
   return (
     <section
       id="projects"
@@ -110,7 +126,7 @@ export default function Projects() {
                       <div className="relative w-full h-full group-hover:scale-110 transition-transform duration-700 ease-out">
                         <Image
                           src={project.image}
-                          alt={project.title}
+                          alt={getProjectText(project, "title")}
                           fill
                           loading={index < 3 ? "eager" : "lazy"}
                           unoptimized
@@ -162,13 +178,13 @@ export default function Projects() {
                       
                       <div className="flex justify-between items-start mb-3">
                           <h3 className={`font-bold text-white group-hover:text-blue-400 transition-colors line-clamp-1 ${isFeatured ? "text-2xl" : "text-xl"}`}>
-                            <GlowHeading tone="cyan">{t(`projects.${project.slug}.title`)}</GlowHeading>
+                            <GlowHeading tone="cyan">{getProjectText(project, "title")}</GlowHeading>
                           </h3>
                           <ArrowUpRight className="w-5 h-5 text-gray-500 group-hover:text-blue-400 group-hover:-translate-y-1 group-hover:translate-x-1 transition-all duration-300 shrink-0 ml-2" />
                       </div>
 
                       <p className={`text-gray-400 text-sm leading-relaxed mb-6 grow font-light ${isFeatured ? "line-clamp-3" : "line-clamp-2"}`}>
-                        {t(`projects.${project.slug}.description`)}
+                        {getProjectText(project, "description")}
                       </p>
 
                       {/* Tech Stack Tags */}
@@ -193,7 +209,7 @@ export default function Projects() {
                               <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                           </div>
                           <p className="text-xs font-bold text-gray-300 group-hover:text-white transition-colors truncate">
-                            {t(`projects.${project.slug}.impact`)}
+                            {getProjectText(project, "impact")}
                           </p>
                       </div>
                     </div>

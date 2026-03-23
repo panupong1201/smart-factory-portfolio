@@ -87,6 +87,18 @@ export default function ProjectPage() {
     return null;
   }
 
+  const getProjectText = (field: string, targetProject = project) => {
+    const key = `projects.${targetProject.slug}.${field}`;
+    const translated = t(key);
+    const fallback = targetProject[field as keyof typeof targetProject];
+
+    if (translated !== key && translated.trim() !== "") {
+      return translated;
+    }
+
+    return typeof fallback === "string" ? fallback : key;
+  };
+
   const nextProject = projects[(projectIndex + 1) % projects.length];
   const isYoutubeDemo = project.videoDemo?.includes("youtube");
   const isDirectVideoDemo =
@@ -105,7 +117,7 @@ export default function ProjectPage() {
         <div className="relative h-[60vh] w-full">
           <Image
             src={project.image}
-            alt={project.title}
+            alt={getProjectText("title")}
             fill
             className="object-cover opacity-30"
             priority
@@ -123,7 +135,7 @@ export default function ProjectPage() {
                 {t("projectDetail.backToProjects")}
               </Link>
               <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight max-w-3xl">
-                <GlowHeading tone="blue">{t(`projects.${project.slug}.title`)}</GlowHeading>
+                <GlowHeading tone="blue">{getProjectText("title")}</GlowHeading>
               </h1>
               <div className="flex flex-wrap gap-2">
                 {project.tech.map((tech: string) => (
@@ -150,9 +162,9 @@ export default function ProjectPage() {
             className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-gray-900/80 backdrop-blur-xl border border-white/10 p-6 rounded-2xl shadow-xl mb-16"
           >
             {[
-              { icon: User, label: t("projectDetail.role"), val: t(`projects.${project.slug}.role`) },
+              { icon: User, label: t("projectDetail.role"), val: getProjectText("role") },
               { icon: Calendar, label: t("projectDetail.year"), val: project.year },
-              { icon: Clock, label: t("projectDetail.duration"), val: t(`projects.${project.slug}.duration`) },
+              { icon: Clock, label: t("projectDetail.duration"), val: getProjectText("duration") },
               { icon: Layers, label: t("projectDetail.type"), val: t("projectDetail.industrialAutomation") },
             ].map((stat, i) => (
               <motion.div
@@ -188,7 +200,7 @@ export default function ProjectPage() {
                 </h3>
               </div>
               <p className="text-gray-300 leading-relaxed text-lg relative z-10">
-                {t(`projects.${project.slug}.problem`)}
+                {getProjectText("problem")}
               </p>
             </motion.div>
             <motion.div
@@ -207,7 +219,7 @@ export default function ProjectPage() {
                 </h3>
               </div>
               <p className="text-gray-300 leading-relaxed text-lg relative z-10">
-                {t(`projects.${project.slug}.solution`)}
+                {getProjectText("solution")}
               </p>
             </motion.div>
           </div>
@@ -285,7 +297,7 @@ export default function ProjectPage() {
                         </h3>
                     </div>
                     <div className="text-gray-300 leading-relaxed text-lg whitespace-pre-line space-y-4">
-                      {t(`projects.${project.slug}.lessonsLearned`)}
+                      {getProjectText("lessonsLearned")}
                     </div>
                 </div>
             </div>
@@ -306,7 +318,7 @@ export default function ProjectPage() {
               <div className="absolute inset-0 bg-green-500/20 blur-2xl rounded-full" />
               <div className="relative bg-black/60 border border-green-500/30 px-12 py-8 rounded-3xl backdrop-blur-md">
                 <span className="text-3xl md:text-5xl font-bold text-transparent bg-clip-text bg-linear-to-r from-green-400 to-emerald-500">
-                  {t(`projects.${project.slug}.impact`)}
+                  {getProjectText("impact")}
                 </span>
               </div>
             </div>
@@ -319,7 +331,7 @@ export default function ProjectPage() {
                 <GlowHeading tone="blue">{t("projects.detailHeading")}</GlowHeading>
               </h3>
               <p className="whitespace-pre-line leading-relaxed">
-                {t(`projects.${project.slug}.content`)}
+                {getProjectText("content")}
               </p>
             </div>
             <div className="bg-white/5 border border-white/10 rounded-2xl p-6 h-fit">
@@ -375,7 +387,7 @@ export default function ProjectPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-3xl md:text-5xl font-bold text-white group-hover:text-blue-400 transition-colors">
-                    <GlowHeading tone="blue">{t(`projects.${nextProject.slug}.title`)}</GlowHeading>
+                    <GlowHeading tone="blue">{getProjectText("title", nextProject)}</GlowHeading>
                   </h3>
                   <p className="text-gray-500 mt-2">
                     {nextProject.tech.slice(0, 3).join(" • ")}

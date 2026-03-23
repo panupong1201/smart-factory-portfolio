@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# deploy artifacts
+deploy-node/
+deploy/smart-factory-portfolio.tar
+.copilot-port3000-status.txt

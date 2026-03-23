@@ -1,33 +1,37 @@
 import { createHash } from "crypto";
-import { promises as fs } from "fs";
-import path from "path";
+import { prisma } from "@/lib/prisma";
 
-type VisitRecord = {
+type SummaryVisit = {
   visitorId: string;
-  timestamp: string;
-  version: string;
+  appVersion: string | null;
+  countryCode: string | null;
+  region: string | null;
+  city: string | null;
+  createdAt: Date;
 };
 
-type VisitLog = {
+type VisitLogRow = {
   visitorId: string;
-  timestamp: string;
-  version: string;
-  ip: string;
-  userAgent: string;
-  language: string;
-  country: string;
-  region: string;
-  city: string;
+  createdAt: Date;
+  appVersion: string | null;
+  ipAddress: string;
+  userAgent: string | null;
+  language: string | null;
+  countryCode: string | null;
+  region: string | null;
+  city: string | null;
+  isp: string | null;
+  organization: string | null;
+  industrialZone: string | null;
+  sourcePath: string | null;
+  projectSlug: string | null;
+  isBot: boolean;
+  isRepeat: boolean;
 };
 
 type GetVisitLogsOptions = {
   limit?: number;
   version?: string;
-};
-
-type VisitStore = {
-  visits: VisitRecord[];
-  logs: VisitLog[];
 };
 
 type LogVisitInput = {
@@ -39,20 +43,19 @@ type LogVisitInput = {
   country?: string;
   region?: string;
   city?: string;
+  isp?: string;
+  organization?: string;
+  industrialZone?: string | null;
+  sourcePath?: string;
+  projectSlug?: string | null;
+  isBot?: boolean;
+  timestamp?: string | Date;
 };
 
-const DATA_DIR = path.join(process.cwd(), "storage");
-const DATA_FILE = path.join(DATA_DIR, "visits.json");
-
-let writeQueue: Promise<void> = Promise.resolve();
-
-function getDayKey(date: Date) {
-  return date.toISOString().slice(0, 10);
-}
-
-function parseDate(value: string) {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? null : date;
+function parseDate(value: string | Date | undefined) {
+  if (!value) return new Date();
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(date.getTime()) ? new Date() : date;
 }
 
 function getStartOfIsoWeek(now: Date) {
@@ -72,90 +75,10 @@ function getStartOfYear(now: Date) {
   return new Date(now.getFullYear(), 0, 1, 0, 0, 0, 0);
 }
 
-async function ensureStoreFile() {
-  await fs.mkdir(DATA_DIR, { recursive: true });
-
-  try {
-    await fs.access(DATA_FILE);
-  } catch {
-    const initial: VisitStore = { visits: [], logs: [] };
-    await fs.writeFile(DATA_FILE, JSON.stringify(initial, null, 2), "utf8");
-  }
-}
-
-async function readStore(): Promise<VisitStore> {
-  await ensureStoreFile();
-  const raw = await fs.readFile(DATA_FILE, "utf8");
-
-  try {
-    const parsed = JSON.parse(raw) as Partial<VisitStore>;
-    const visits = Array.isArray(parsed.visits)
-      ? parsed.visits
-          .filter((visit): visit is VisitRecord => {
-            return (
-              !!visit &&
-              typeof visit.visitorId === "string" &&
-              typeof visit.timestamp === "string"
-            );
-          })
-          .map((visit) => ({
-            visitorId: visit.visitorId,
-            timestamp: visit.timestamp,
-            version:
-              typeof visit.version === "string" &&
-              visit.version.trim().length > 0
-                ? visit.version.trim()
-                : "v1",
-          }))
-      : [];
-
-    const logs = Array.isArray(parsed.logs)
-      ? parsed.logs.filter((log): log is VisitLog => {
-          return (
-            !!log &&
-            typeof log.visitorId === "string" &&
-            typeof log.timestamp === "string" &&
-            typeof log.version === "string" &&
-            typeof log.ip === "string" &&
-            typeof log.userAgent === "string" &&
-            typeof log.language === "string" &&
-            typeof log.country === "string" &&
-            typeof log.region === "string" &&
-            typeof log.city === "string"
-          );
-        })
-      : [];
-
-    return { visits, logs };
-  } catch {
-    return { visits: [], logs: [] };
-  }
-}
-
-async function writeStore(store: VisitStore) {
-  writeQueue = writeQueue.then(async () => {
-    await fs.writeFile(DATA_FILE, JSON.stringify(store, null, 2), "utf8");
-  });
-  await writeQueue;
-}
-
-function dedupeByPeriod(visits: VisitRecord[], fromDate: Date, toDate: Date) {
-  const unique = new Set<string>();
-
-  for (const visit of visits) {
-    const date = parseDate(visit.timestamp);
-    if (!date) continue;
-    if (date >= fromDate && date <= toDate) {
-      unique.add(visit.visitorId);
-    }
-  }
-
-  return unique.size;
-}
-
-function normalizeVersion(version?: string) {
+function normalizeVersion(version?: string | null) {
   const value = (version || "").trim();
-  return value.length > 0 ? value : "v1";
+  if (!value) return "v1";
+  return value.startsWith("v") ? value : `v${value}`;
 }
 
 function normalizeLimit(limit?: number) {
@@ -166,6 +89,16 @@ function normalizeLimit(limit?: number) {
   return value;
 }
 
+function normalizeText(value?: string | null, fallback = "unknown") {
+  const normalized = value?.trim();
+  return normalized && normalized.length > 0 ? normalized : fallback;
+}
+
+function normalizeNullableText(value?: string | null) {
+  const normalized = value?.trim();
+  return normalized && normalized.length > 0 ? normalized : null;
+}
+
 function pickTop(entries: Record<string, number>, limit = 5) {
   return Object.entries(entries)
     .sort((a, b) => b[1] - a[1])
@@ -173,50 +106,84 @@ function pickTop(entries: Record<string, number>, limit = 5) {
     .map(([name, count]) => ({ name, count }));
 }
 
+function countUniqueWithinRange(visits: SummaryVisit[], fromDate: Date, toDate: Date) {
+  const unique = new Set<string>();
+
+  for (const visit of visits) {
+    if (visit.createdAt >= fromDate && visit.createdAt <= toDate) {
+      unique.add(visit.visitorId);
+    }
+  }
+
+  return unique.size;
+}
+
 export function createVisitorId(rawIdentity: string) {
   return createHash("sha256").update(rawIdentity).digest("hex");
 }
 
 export async function logVisit(input: LogVisitInput) {
-  const store = await readStore();
-  const now = new Date();
-  const todayKey = getDayKey(now);
+  const now = parseDate(input.timestamp);
   const version = normalizeVersion(input.version);
   const visitorId = input.visitorId;
 
-  const alreadyLoggedToday = store.visits.some((visit) => {
-    if (visit.visitorId !== visitorId) return false;
-    const date = parseDate(visit.timestamp);
-    return date ? getDayKey(date) === todayKey : false;
-  });
-
-  if (!alreadyLoggedToday) {
-    store.visits.push({
-      visitorId,
-      timestamp: now.toISOString(),
-      version,
+  await prisma.$transaction(async (tx) => {
+    const existingVisitCount = await tx.visit.count({
+      where: { visitorId },
     });
-  }
 
-  store.logs.push({
-    visitorId,
-    timestamp: now.toISOString(),
-    version,
-    ip: (input.ip || "unknown").trim() || "unknown",
-    userAgent: (input.userAgent || "unknown").trim() || "unknown",
-    language: (input.language || "unknown").trim() || "unknown",
-    country: (input.country || "unknown").trim() || "unknown",
-    region: (input.region || "unknown").trim() || "unknown",
-    city: (input.city || "unknown").trim() || "unknown",
+    await tx.visitor.upsert({
+      where: { visitorId },
+      create: {
+        visitorId,
+        firstVisit: now,
+        lastVisit: now,
+        visitCount: 1,
+      },
+      update: {
+        lastVisit: now,
+        visitCount: {
+          increment: 1,
+        },
+      },
+    });
+
+    await tx.visit.create({
+      data: {
+        visitorId,
+        appVersion: version,
+        ipAddress: normalizeText(input.ip),
+        userAgent: normalizeText(input.userAgent),
+        language: normalizeText(input.language),
+        countryCode: normalizeNullableText(input.country)?.slice(0, 2).toUpperCase() ?? null,
+        region: normalizeNullableText(input.region),
+        city: normalizeNullableText(input.city),
+        isp: normalizeNullableText(input.isp),
+        organization: normalizeNullableText(input.organization),
+        industrialZone: normalizeNullableText(input.industrialZone),
+        sourcePath: normalizeNullableText(input.sourcePath),
+        projectSlug: normalizeNullableText(input.projectSlug),
+        isBot: Boolean(input.isBot),
+        isRepeat: existingVisitCount > 0,
+        createdAt: now,
+      },
+    });
   });
-
-  await writeStore(store);
 }
 
 export async function getVisitSummary() {
-  const store = await readStore();
-  const now = new Date();
+  const visits = await prisma.visit.findMany({
+    select: {
+      visitorId: true,
+      appVersion: true,
+      countryCode: true,
+      region: true,
+      city: true,
+      createdAt: true,
+    },
+  });
 
+  const now = new Date();
   const startOfToday = new Date(now);
   startOfToday.setHours(0, 0, 0, 0);
 
@@ -224,54 +191,42 @@ export async function getVisitSummary() {
   const startOfMonth = getStartOfMonth(now);
   const startOfYear = getStartOfYear(now);
 
-  const totalUnique = new Set(store.visits.map((visit) => visit.visitorId))
-    .size;
+  const totalUnique = new Set(visits.map((visit) => visit.visitorId)).size;
 
   const byVersionMap = new Map<string, Set<string>>();
-  for (const visit of store.visits) {
-    const version = normalizeVersion(visit.version);
+  const countryCounts: Record<string, number> = {};
+  const regionCounts: Record<string, number> = {};
+  const cityCounts: Record<string, number> = {};
+
+  for (const visit of visits) {
+    const version = normalizeVersion(visit.appVersion);
     if (!byVersionMap.has(version)) {
       byVersionMap.set(version, new Set<string>());
     }
     byVersionMap.get(version)?.add(visit.visitorId);
+
+    if (visit.countryCode) {
+      countryCounts[visit.countryCode] = (countryCounts[visit.countryCode] || 0) + 1;
+    }
+    if (visit.region) {
+      regionCounts[visit.region] = (regionCounts[visit.region] || 0) + 1;
+    }
+    if (visit.city) {
+      cityCounts[visit.city] = (cityCounts[visit.city] || 0) + 1;
+    }
   }
 
   const versions = Array.from(byVersionMap.entries())
     .map(([version, visitors]) => ({ version, visitors: visitors.size }))
-    .sort((a, b) => {
-      const aNum = Number(a.version.replace(/^v/i, ""));
-      const bNum = Number(b.version.replace(/^v/i, ""));
-      const aValid = Number.isFinite(aNum);
-      const bValid = Number.isFinite(bNum);
-
-      if (aValid && bValid) return aNum - bNum;
-      if (aValid) return -1;
-      if (bValid) return 1;
-      return a.version.localeCompare(b.version);
-    });
-
-  const countryCounts: Record<string, number> = {};
-  const regionCounts: Record<string, number> = {};
-  const cityCounts: Record<string, number> = {};
-  for (const log of store.logs) {
-    if (log.country && log.country !== "unknown") {
-      countryCounts[log.country] = (countryCounts[log.country] || 0) + 1;
-    }
-    if (log.region && log.region !== "unknown") {
-      regionCounts[log.region] = (regionCounts[log.region] || 0) + 1;
-    }
-    if (log.city && log.city !== "unknown") {
-      cityCounts[log.city] = (cityCounts[log.city] || 0) + 1;
-    }
-  }
+    .sort((a, b) => a.version.localeCompare(b.version, undefined, { numeric: true }));
 
   return {
     total: totalUnique,
     versions,
-    today: dedupeByPeriod(store.visits, startOfToday, now),
-    week: dedupeByPeriod(store.visits, startOfWeek, now),
-    month: dedupeByPeriod(store.visits, startOfMonth, now),
-    year: dedupeByPeriod(store.visits, startOfYear, now),
+    today: countUniqueWithinRange(visits, startOfToday, now),
+    week: countUniqueWithinRange(visits, startOfWeek, now),
+    month: countUniqueWithinRange(visits, startOfMonth, now),
+    year: countUniqueWithinRange(visits, startOfYear, now),
     geo: {
       topCountries: pickTop(countryCounts),
       topRegions: pickTop(regionCounts),
@@ -282,26 +237,60 @@ export async function getVisitSummary() {
 }
 
 export async function getVisitLogs(options?: GetVisitLogsOptions) {
-  const store = await readStore();
   const limit = normalizeLimit(options?.limit);
   const versionFilter = options?.version?.trim();
+  const where = versionFilter
+    ? { appVersion: normalizeVersion(versionFilter) }
+    : undefined;
 
-  const filtered = store.logs.filter((log) => {
-    if (!versionFilter) return true;
-    return normalizeVersion(log.version) === normalizeVersion(versionFilter);
-  });
+  const [total, visits] = await Promise.all([
+    prisma.visit.count({ where }),
+    prisma.visit.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      take: limit,
+      select: {
+        visitorId: true,
+        createdAt: true,
+        appVersion: true,
+        ipAddress: true,
+        userAgent: true,
+        language: true,
+        countryCode: true,
+        region: true,
+        city: true,
+        isp: true,
+        organization: true,
+        industrialZone: true,
+        sourcePath: true,
+        projectSlug: true,
+        isBot: true,
+        isRepeat: true,
+      },
+    }),
+  ]);
 
-  const logs = filtered
-    .slice()
-    .sort((a, b) => {
-      const aTime = parseDate(a.timestamp)?.getTime() || 0;
-      const bTime = parseDate(b.timestamp)?.getTime() || 0;
-      return bTime - aTime;
-    })
-    .slice(0, limit);
+  const logs = visits.map((visit: VisitLogRow) => ({
+    visitorId: visit.visitorId,
+    timestamp: visit.createdAt.toISOString(),
+    version: normalizeVersion(visit.appVersion),
+    ip: visit.ipAddress,
+    userAgent: visit.userAgent || "unknown",
+    language: visit.language || "unknown",
+    country: visit.countryCode || "unknown",
+    region: visit.region || "unknown",
+    city: visit.city || "unknown",
+    isp: visit.isp || "unknown",
+    organization: visit.organization || "unknown",
+    industrialZone: visit.industrialZone || null,
+    sourcePath: visit.sourcePath || null,
+    projectSlug: visit.projectSlug || null,
+    isBot: visit.isBot,
+    isRepeat: visit.isRepeat,
+  }));
 
   return {
-    total: filtered.length,
+    total,
     count: logs.length,
     logs,
   };

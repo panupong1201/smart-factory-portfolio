@@ -3,7 +3,7 @@ services:
     image: smart-factory-portfolio:latest
     container_name: smart-factory-portfolio
     ports:
-      - "3000:3000"
+      - "119.59.114.118:3000:3000"
     env_file:
       - .env.local
     volumes:

@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Visitor {
+  id         BigInt   @id @default(autoincrement())
+  visitorId  String   @unique @map("visitor_id") @db.VarChar(64)
+  firstVisit DateTime @default(now()) @map("first_visit") @db.Timestamptz(6)
+  lastVisit  DateTime @default(now()) @map("last_visit") @db.Timestamptz(6)
+  visitCount Int      @default(1) @map("visit_count")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  visits     Visit[]
+
+  @@index([createdAt], map: "idx_visitors_created_at")
+  @@map("visitors")
+}
+
+model Visit {
+  id             BigInt   @id @default(autoincrement())
+  visitorId      String   @map("visitor_id") @db.VarChar(64)
+  ipAddress      String   @map("ip_address") @db.VarChar(64)
+  appVersion     String?  @map("app_version") @db.VarChar(20)
+  userAgent      String?  @map("user_agent")
+  language       String?  @db.VarChar(32)
+  countryCode    String?  @map("country_code") @db.Char(2)
+  city           String?  @db.VarChar(100)
+  region         String?  @db.VarChar(100)
+  isp            String?  @db.VarChar(255)
+  organization   String?  @db.VarChar(255)
+  industrialZone String?  @map("industrial_zone") @db.VarChar(255)
+  sourcePath     String?  @map("source_path") @db.VarChar(255)
+  projectSlug    String?  @map("project_slug") @db.VarChar(100)
+  isBot          Boolean  @default(false) @map("is_bot")
+  isRepeat       Boolean  @default(false) @map("is_repeat")
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  visitor        Visitor  @relation(fields: [visitorId], references: [visitorId], onDelete: Cascade)
+
+  @@index([visitorId], map: "idx_visits_visitor_id")
+  @@index([appVersion], map: "idx_visits_app_version")
+  @@index([industrialZone], map: "idx_visits_industrial_zone")
+  @@index([countryCode], map: "idx_visits_country_code")
+  @@index([projectSlug], map: "idx_visits_project_slug")
+  @@index([createdAt], map: "idx_visits_created_at")
+  @@map("visits")
+}
+
+model IpEnrichment {
+  id          BigInt   @id @default(autoincrement())
+  keyword     String   @unique @db.VarChar(255)
+  category    String   @db.VarChar(50)
+  description String?
+  countryCode String?  @map("country_code") @db.Char(2)
+  province    String?  @db.VarChar(100)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([category], map: "idx_ip_enrichment_category")
+  @@map("ip_enrichment")
+}
+
+model VersionSnapshot {
+  id               BigInt   @id @default(autoincrement())
+  appVersion       String   @unique @map("app_version") @db.VarChar(20)
+  deployedDate     DateTime @default(now()) @map("deployed_date") @db.Timestamptz(6)
+  totalVisits      BigInt   @default(0) @map("total_visits")
+  uniqueVisitors   BigInt   @default(0) @map("unique_visitors")
+  industrialVisits BigInt   @default(0) @map("industrial_visits")
+  byCountry        Json?    @map("by_country")
+  topIndustries    Json?    @map("top_industries")
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@map("version_snapshots")
+}

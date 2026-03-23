@@ -55,6 +55,7 @@ export default function CompareGallery({ data }: { data: CompareImage | CompareI
   useEffect(() => { setSliderPos(50); }, [currentIndex]);
 
   const currentPair = images[currentIndex];
+  const dragToCompareText = t("projects.dragToCompare");
   const resolveLabel = (lbl?: string) => {
     if (!lbl) return "";
     const key = `compareLabels.${lbl}`;
@@ -66,11 +67,11 @@ export default function CompareGallery({ data }: { data: CompareImage | CompareI
   const prevImage = () => setCurrentIndex((p) => (p - 1 + images.length) % images.length);
 
   return (
-    <div className="w-full space-y-6">
+    <div className="mx-auto max-w-6xl w-full space-y-6">
       {/* Interactive Slider */}
       <div
         ref={containerRef}
-        className="relative aspect-16/10 md:aspect-video rounded-2xl overflow-hidden border border-white/10 select-none bg-gray-900 group/slider"
+        className="relative aspect-video rounded-2xl overflow-hidden border border-white/10 select-none bg-neutral-900/50 group/slider"
         style={{ cursor: isDragging ? "col-resize" : "default" }}
         onMouseDown={(e) => startDrag(e.clientX)}
         onTouchStart={(e) => startDrag(e.touches[0].clientX)}
@@ -85,7 +86,7 @@ export default function CompareGallery({ data }: { data: CompareImage | CompareI
             transition={{ duration: 0.4 }}
             className="absolute inset-0"
           >
-            <Image src={currentPair.after} alt="After" fill unoptimized className="object-cover" draggable={false} />
+            <Image src={currentPair.after} alt="After" fill unoptimized className="object-contain p-2" draggable={false} />
             <div className="absolute inset-0 bg-green-500/5" />
           </motion.div>
         </AnimatePresence>
@@ -101,7 +102,7 @@ export default function CompareGallery({ data }: { data: CompareImage | CompareI
             className="absolute inset-0"
             style={{ clipPath: `inset(0 ${100 - sliderPos}% 0 0)` }}
           >
-            <Image src={currentPair.before} alt="Before" fill unoptimized className="object-cover" draggable={false} />
+            <Image src={currentPair.before} alt="Before" fill unoptimized className="object-contain p-2" draggable={false} />
             <div className="absolute inset-0 bg-red-900/5" />
           </motion.div>
         </AnimatePresence>
@@ -148,7 +149,7 @@ export default function CompareGallery({ data }: { data: CompareImage | CompareI
           className="absolute bottom-14 left-1/2 -translate-x-1/2 z-20 pointer-events-none"
         >
           <span className="bg-white/10 backdrop-blur-md text-white/70 text-xs px-4 py-1.5 rounded-full border border-white/10">
-            ← {t("projects.dragToCompare") || "drag to compare"} →
+            ← {dragToCompareText === "projects.dragToCompare" ? "drag to compare" : dragToCompareText} →
           </span>
         </motion.div>
       </div>

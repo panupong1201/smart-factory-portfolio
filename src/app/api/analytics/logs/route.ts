@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getVisitLogs } from "@/lib/visitorStore";
 
+export const runtime = "nodejs";
+
 function isAuthorized(req: NextRequest) {
   const token = process.env.ANALYTICS_API_KEY;
   if (!token) return true;

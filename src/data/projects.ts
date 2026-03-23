@@ -312,13 +312,13 @@ Business Impact:
   },
 
   // =====================================================================
-  // PROJECT 4: peDashboard - Production Engineering & Maintenance Platform
+  // PROJECT 4: PE Dashboard - Production Engineering & Maintenance Intelligence Platform
   // =====================================================================
   {
     slug: "pe-dashboard",
-    title: "peDashboard: Production Engineering & Maintenance Platform",
+    title: "PE Dashboard: Production Engineering & Maintenance Intelligence Platform",
     image:
-      "https://placehold.co/1920x1080/0f172a/f8fafc?text=peDashboard+Main",
+      "https://placehold.co/1920x1080/0f172a/f8fafc?text=PE+Dashboard+Main",
     tech: [
       "Next.js",
       "TypeScript",
@@ -342,7 +342,7 @@ Business Impact:
       "Factory maintenance operations were fragmented across spreadsheets, isolated forms, and manual follow-ups. Machine history, repair requests, preventive maintenance schedules, and spare-part usage were not connected in one workflow, making it difficult to prioritize risk, trace recurring failures, or give management a real-time view of plant reliability.",
 
     solution:
-      "I built peDashboard, a full-stack maintenance intelligence platform that unifies machine asset management, repair request workflows, preventive maintenance, spare-parts inventory, and AI-assisted analytics in a single Next.js application. The system combines role-based access control, QR/PDF operational flows, Telegram notifications, and structured risk insights so technicians, leaders, and requesters can work from one source of truth.",
+      "I built PE Dashboard, a full-stack maintenance intelligence platform that unifies machine asset management, repair request workflows, preventive maintenance, spare-parts inventory, and AI-assisted analytics in a single Next.js application. The system combines role-based access control, QR/PDF operational flows, Telegram notifications, and structured risk insights so technicians, leaders, and requesters can work from one source of truth.",
 
     lessonsLearned: `- Workflow Coupling: Maintenance, machine history, and spare-part reservations cannot be designed as isolated modules. I linked these workflows so teams can trace each request from machine issue to repair action and part consumption without losing context.
 - Permission Design: Real factory users do not fit into a simple admin/user split. I implemented a finer-grained RBAC model so requesters, technicians, leaders, and managers each see the right actions without exposing the entire system.
@@ -379,7 +379,7 @@ Business Impact:
       },
     ],
     videoDemo:
-      "https://placehold.co/1920x1080/0f172a/f8fafc?text=peDashboard+Demo",
+      "https://placehold.co/1920x1080/0f172a/f8fafc?text=PE+Dashboard+Demo",
 
     description:
       "Unified production engineering platform for machine reliability, maintenance workflows, spare inventory control, and AI-assisted operational insight.",
@@ -387,7 +387,7 @@ Business Impact:
       "Centralized Maintenance Workflows | Real-Time Asset Visibility | AI-Assisted Risk Prioritization | QR/PDF Operational Tracking",
 
     content: `
-  peDashboard is a factory-focused production engineering platform designed to connect maintenance execution, machine history, and spare-parts control into one operational system.
+  PE Dashboard is a factory-focused production engineering platform designed to connect maintenance execution, machine history, and spare-parts control into one operational system.
 
   Project Scope:
   - Built a centralized web application for machine assets, maintenance requests, preventive maintenance, work orders, and spare inventory.
@@ -572,23 +572,23 @@ Business Impact:
         label: "Visualization",
       },
       {
+        after: "/projects/factory/4.jpg",
         before: "/projects/factory/IMG_4933.jpg",
-        after: "/projects/factory/1.jpg",
         label: "Planning",
       },
       {
         before: "/projects/factory/IMG_3900.jpg",
-        after: "/projects/factory/3.jpg",
+        after: "/projects/factory/1.jpg",
         label: "Site Assessment",
       },
       {
         before: "/projects/factory/factory-3d.jpg",
-        after: "/projects/factory/4.jpg",
+        after: "/projects/factory/3.jpg",
         label: "3D Modeling",
       },
       {
-        before: "/projects/factory/5.jpg",
-        after: "/projects/factory/6.png",
+        before: "/projects/factory/6.png",
+        after: "/projects/factory/5.jpg",
         label: "Collision Detection",
       },
       {

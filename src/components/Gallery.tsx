@@ -46,6 +46,7 @@ export default function Gallery({ images }: { images: string[] }) {
 
   return (
     <div className="mt-24 border-t border-white/10 pt-12">
+      <div className="mx-auto max-w-6xl">
       
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
@@ -75,14 +76,16 @@ export default function Gallery({ images }: { images: string[] }) {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
                 transition={{ duration: 0.3 }}
-                className="relative group cursor-pointer rounded-2xl overflow-hidden aspect-video border border-white/10 bg-gray-900 shadow-lg"
+                className="relative group cursor-pointer rounded-2xl overflow-hidden aspect-video border border-white/10 bg-neutral-900/50 shadow-lg"
                 onClick={() => setSelectedIndex(i)} // เปิด Lightbox รูปที่ถูกต้อง
             >
                 <Image
                     src={img}
                   alt={`${t("projects.systemGallery")} ${i + 1}`}
                     fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  priority={i === 0}
+                  className="object-contain transition-transform duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100"
                 />
                 
                 {/* Hover Overlay */}
@@ -168,6 +171,7 @@ export default function Gallery({ images }: { images: string[] }) {
           </motion.div>
         )}
       </AnimatePresence>
+      </div>
     </div>
   );
 }
