@@ -19,9 +19,13 @@ jobs:
           port: ${{ secrets.PORT }}
           script_stop: true
           script: |
-            cd 'C:\Users\Administrator\Desktop\deploy-node\package'
+            Set-Location 'C:\Users\Administrator\Desktop\deploy-node\package'
             git fetch --all
             git reset --hard origin/main
-            git clean -fd
+            git clean -fd -e storage/ -e .env.local
             npm install
-            pm2 reload smart-factory-portfolio || pm2 start npm --name 'smart-factory-portfolio' -- start
+            npx prisma generate
+            npx prisma migrate deploy
+            npm run build
+            pm2 reload ecosystem.config.cjs --only smart-factory-portfolio --update-env || pm2 start ecosystem.config.cjs --only smart-factory-portfolio --update-env
+            pm2 save
