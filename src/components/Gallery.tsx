@@ -6,7 +6,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight, ZoomIn, ImageIcon, ChevronDown, ChevronUp } from "lucide-react";
 import { useLanguage } from "./LanguageProvider";
 
-export default function Gallery({ images }: { images: string[] }) {
+type GalleryProps = {
+  images: string[];
+  title?: string;
+  totalLabel?: string;
+};
+
+export default function Gallery({ images, title, totalLabel }: GalleryProps) {
   const { t } = useLanguage();
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [showAll, setShowAll] = useState(false); // ✅ เพิ่ม State สำหรับย่อ/ขยาย
@@ -47,6 +53,12 @@ export default function Gallery({ images }: { images: string[] }) {
   return (
     <div className="mt-24 border-t border-white/10 pt-12">
       <div className="mx-auto max-w-6xl">
+      {(() => {
+        const resolvedTitle = title ?? t("projects.systemGallery");
+        const resolvedTotalLabel = totalLabel ?? t("projects.totalAssets");
+
+        return (
+          <>
       
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
@@ -54,13 +66,16 @@ export default function Gallery({ images }: { images: string[] }) {
             <div className="p-2 bg-blue-500/10 rounded-lg text-blue-400">
                 <ImageIcon className="w-6 h-6" />
             </div>
-          <h2 className="text-3xl font-bold text-white">{t("projects.systemGallery")}</h2>
+          <h2 className="text-3xl font-bold text-white">{resolvedTitle}</h2>
         </div>
         
         <span className="text-sm font-mono text-gray-500">
-          {t("projects.totalAssets")}: {images.length}
+          {resolvedTotalLabel}: {images.length}
         </span>
       </div>
+          </>
+        );
+      })()}
 
       {/* --- Thumbnails Grid (พร้อม Animation ย่อ/ขยาย) --- */}
       <motion.div 
@@ -81,7 +96,7 @@ export default function Gallery({ images }: { images: string[] }) {
             >
                 <Image
                     src={img}
-                  alt={`${t("projects.systemGallery")} ${i + 1}`}
+                  alt={`${title ?? t("projects.systemGallery")} ${i + 1}`}
                     fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   priority={i === 0}
@@ -96,7 +111,7 @@ export default function Gallery({ images }: { images: string[] }) {
                 </div>
                 
                 {/* Tech Line Decor */}
-                <div className="absolute bottom-0 left-0 w-full h-[2px] bg-linear-to-r from-blue-500 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+                <div className="absolute bottom-0 left-0 h-0.5 w-full bg-linear-to-r from-blue-500 to-transparent scale-x-0 origin-left transition-transform duration-500 group-hover:scale-x-100" />
             </motion.div>
             ))}
         </AnimatePresence>

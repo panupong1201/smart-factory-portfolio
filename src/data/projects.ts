@@ -318,7 +318,7 @@ Business Impact:
     slug: "pe-dashboard",
     title: "PE Dashboard: Production Engineering & Maintenance Intelligence Platform",
     image:
-      "https://placehold.co/1920x1080/0f172a/f8fafc?text=PE+Dashboard+Main",
+      "/projects/PE-Maintenance-System/ai-assistant-chat.png",
     tech: [
       "Next.js",
       "TypeScript",
@@ -329,10 +329,19 @@ Business Impact:
       "Telegram Notifications",
     ],
     gallery: [
-      "https://placehold.co/1920x1080/0f172a/f8fafc?text=Machine+Dashboard",
-      "https://placehold.co/1920x1080/1e293b/f8fafc?text=Maintenance+Workflow",
-      "https://placehold.co/1920x1080/334155/f8fafc?text=Spare+Inventory",
-      "https://placehold.co/1920x1080/475569/f8fafc?text=AI+Analytics",
+      "/projects/PE-Maintenance-System/dashboard-main.png",
+      "/projects/PE-Maintenance-System/ai-assistant-chat.png",
+      "/projects/PE-Maintenance-System/ai-assistant-interface.png",
+      "/projects/PE-Maintenance-System/ai-predictive-analysis.png",
+      "/projects/PE-Maintenance-System/ai-spare-parts-query.png",
+      "/projects/PE-Maintenance-System/ai-predictive-summary.png",
+      "/projects/PE-Maintenance-System/ai-watch-list.png",
+      "/projects/PE-Maintenance-System/analytics-kpi.png",
+      "/projects/PE-Maintenance-System/machine-master.png",
+      "/projects/PE-Maintenance-System/maintenance-requests.png",
+      "/projects/PE-Maintenance-System/performance-metrics.png",
+      "/projects/PE-Maintenance-System/pm-plan-calendar.png",
+      "/projects/PE-Maintenance-System/spare-parts-inventory.png",
     ],
     role: "Full Stack Production Engineering Developer",
     year: "2025 - 2026",
@@ -351,35 +360,28 @@ Business Impact:
     compareImages: [
       {
         before:
-          "https://placehold.co/800x600/64748b/ffffff?text=Before:+Scattered+Tracking",
+          "/projects/PE-Maintenance-System/121.png",
         after:
-          "https://placehold.co/800x600/0f172a/f8fafc?text=After:+Unified+Dashboard",
+          "/projects/PE-Maintenance-System/dashboard-main.png",
         label: "Operational Visibility",
       },
       {
         before:
-          "https://placehold.co/800x600/64748b/ffffff?text=Before:+Manual+Requests",
+          "/projects/PE-Maintenance-System/124.png",
         after:
-          "https://placehold.co/800x600/1e293b/f8fafc?text=After:+Digital+Workflow",
+          "/projects/PE-Maintenance-System/123.png",
         label: "Maintenance Workflow",
       },
       {
         before:
-          "https://placehold.co/800x600/64748b/ffffff?text=Before:+Separate+Inventory",
+          "/projects/PE-Maintenance-System/122.png",
         after:
-          "https://placehold.co/800x600/334155/f8fafc?text=After:+Linked+Spare+Control",
+          "/projects/PE-Maintenance-System/spare-parts-inventory.png",
         label: "Inventory Traceability",
-      },
-      {
-        before:
-          "https://placehold.co/800x600/64748b/ffffff?text=Before:+Reactive+Review",
-        after:
-          "https://placehold.co/800x600/475569/f8fafc?text=After:+AI+Risk+Insights",
-        label: "Decision Support",
       },
     ],
     videoDemo:
-      "https://placehold.co/1920x1080/0f172a/f8fafc?text=PE+Dashboard+Demo",
+      "/projects/PE-Maintenance-System/videos/AIPE.mp4",
 
     description:
       "Unified production engineering platform for machine reliability, maintenance workflows, spare inventory control, and AI-assisted operational insight.",
@@ -642,7 +644,7 @@ Business Impact:
   {
     slug: "cart-part-design",
     title: "Cart Part Design & Engineering Development",
-    image: "https://placehold.co/1920x1080/636/FFF?text=Cart+Design+Main",
+    image: "/projects/3DCart/123.png",
     tech: [
       "AutoCAD",
       "SketchUp 3D",
