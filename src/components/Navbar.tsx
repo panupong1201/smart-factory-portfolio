@@ -53,15 +53,15 @@ export default function Navbar() {
         </a>
 
         {/* DESKTOP MENU: เรียงใหม่ให้ตรงกับหน้าเว็บ */}
-        <div className="hidden md:flex gap-1 items-center bg-white/5 px-2 py-1 rounded-full border border-white/10 backdrop-blur-md">
+        <div className="hidden md:flex gap-0.5 items-center bg-white/5 px-2 py-1 rounded-full border border-white/10 backdrop-blur-md">
           {/* navigation items translated */}
           {['about', 'skills', 'toolkit', 'timeline', 'projects', 'certificates', 'contact'].map((key) => (
             <a
               key={key}
               href={`#${key}`}
-              className="relative px-5 py-2 text-sm text-gray-400 hover:text-white transition-colors font-mono tracking-wide group overflow-hidden rounded-full"
+              className="relative px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors font-mono tracking-wide group overflow-hidden rounded-full"
             >
-              <span className="absolute top-0 left-1/2 w-1/2 h-[2px] bg-linear-to-r from-transparent via-blue-500 to-transparent -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-[0_0_10px_#3b82f6]" />
+              <span className="absolute top-0 left-1/2 h-0.5 w-1/2 bg-linear-to-r from-transparent via-blue-500 to-transparent -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-[0_0_10px_#3b82f6]" />
               <span className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-full" />
               {t(`nav.${key}`)}
             </a>
@@ -75,13 +75,13 @@ export default function Navbar() {
           <div className="relative flex bg-black/50 rounded-lg p-1 border border-white/10">
             <motion.div 
               layout
-              className={`absolute top-1 bottom-1 w-[34px] bg-linear-to-br from-blue-600 to-purple-600 rounded shadow-[0_0_10px_rgba(124,58,237,0.4)]`}
+              className={`absolute top-1 bottom-1 w-8.5 bg-linear-to-br from-blue-600 to-purple-600 rounded shadow-[0_0_10px_rgba(124,58,237,0.4)]`}
               initial={false}
               animate={{ x: lang === "en" ? 0 : 38 }}
               transition={{ type: "spring", stiffness: 500, damping: 30 }}
             />
-            <button onClick={() => setLang("en")} className={`relative z-10 px-2 py-1 text-xs font-bold transition-colors w-[34px] text-center ${lang === "en" ? "text-white" : "text-gray-400 hover:text-gray-200"}`}>{t("navbar.en")}</button>
-            <button onClick={() => setLang("th")} className={`relative z-10 px-2 py-1 text-xs font-bold transition-colors w-[34px] text-center ${lang === "th" ? "text-white" : "text-gray-400 hover:text-gray-200"}`}>{t("navbar.th")}</button>
+            <button onClick={() => setLang("en")} className={`relative z-10 w-8.5 px-2 py-1 text-center text-xs font-bold transition-colors ${lang === "en" ? "text-white" : "text-gray-400 hover:text-gray-200"}`}>{t("navbar.en")}</button>
+            <button onClick={() => setLang("th")} className={`relative z-10 w-8.5 px-2 py-1 text-center text-xs font-bold transition-colors ${lang === "th" ? "text-white" : "text-gray-400 hover:text-gray-200"}`}>{t("navbar.th")}</button>
           </div>
 
           {/* Hire Me Button */}
